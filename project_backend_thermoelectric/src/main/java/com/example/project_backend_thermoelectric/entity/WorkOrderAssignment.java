@@ -8,7 +8,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "work_order_assignments")
+@Table(
+        name = "work_order_assignments",
+        uniqueConstraints = { @UniqueConstraint(columnNames = {"work_order_id", "employee_id"}) }
+)
 public class WorkOrderAssignment {
 
     @Id
@@ -19,10 +22,10 @@ public class WorkOrderAssignment {
     private String roleInWork;
 
     @ManyToOne
-    @JoinColumn(name = "work_order_id")
+    @JoinColumn(name = "work_order_id", nullable = false)
     private WorkOrder workOrder;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 }
