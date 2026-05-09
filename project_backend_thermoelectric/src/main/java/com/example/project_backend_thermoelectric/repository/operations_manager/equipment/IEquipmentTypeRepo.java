@@ -1,4 +1,4 @@
-package com.example.project_backend_thermoelectric.repositiory.operations_manager.equipment;
+package com.example.project_backend_thermoelectric.repository.operations_manager.equipment;
 
 import com.example.project_backend_thermoelectric.dto.operations_manager.response.EquipmentTypeDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.detail.EquipmentHeaderDto;
@@ -14,22 +14,22 @@ import java.util.List;
 
 public interface IEquipmentTypeRepo extends JpaRepository<EquipmentType,Long> {
     @Query(value = """
-    select 
-        e.id as id,
-        e.name as name,
-        d.name as domain
-    from equipment_types e
-    join domains d on d.id = e.domain_id
-    where (:searchName is null or e.name like concat('%', :searchName, '%'))
-    and (:searchDomain is null or d.name like :searchDomain)
-    """,
+            select 
+                e.id as id,
+                e.name as name,
+                d.name as domain
+            from equipment_types e
+            join domains d on d.id = e.domain_id
+            where (:searchName = '' or e.name like concat('%', :searchName, '%'))
+            and (:searchDomain = '' or d.name like concat('%', :searchDomain, '%'))
+            """,
             countQuery = """
-    select count(*)
-    from equipment_types e
-    join domains d on d.id = e.domain_id
-    where (:searchName is null or e.name like concat('%', :searchName, '%'))
-    and (:searchDomain is null or d.name like :searchDomain)
-    """,
+select count(*)
+from equipment_types e
+join domains d on d.id = e.domain_id
+where (:searchName = '' or e.name like concat('%', :searchName, '%'))
+and (:searchDomain = '' or d.name like concat('%', :searchDomain, '%'))
+""",
             nativeQuery = true)
     Page<EquipmentTypeDto> searchEquipmentTypeDto(
             @Param("searchName") String name,

@@ -1,4 +1,4 @@
-package com.example.project_backend_thermoelectric.repositiory.operations_manager;
+package com.example.project_backend_thermoelectric.repository.operations_manager;
 
 import com.example.project_backend_thermoelectric.entity.SystemEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
