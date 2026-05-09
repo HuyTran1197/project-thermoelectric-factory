@@ -1,4 +1,4 @@
-package com.example.project_backend_thermoelectric.repositiory.operations_manager.equipment;
+package com.example.project_backend_thermoelectric.repository.operations_manager.equipment;
 
 import com.example.project_backend_thermoelectric.dto.operations_manager.response.ParameterDefinitionDto;
 import com.example.project_backend_thermoelectric.entity.ParameterDefinition;

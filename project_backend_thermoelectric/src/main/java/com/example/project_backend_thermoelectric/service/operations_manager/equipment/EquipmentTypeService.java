@@ -9,8 +9,8 @@ import com.example.project_backend_thermoelectric.entity.Domain;
 import com.example.project_backend_thermoelectric.entity.EquipmentType;
 import com.example.project_backend_thermoelectric.exception.DuplicateResourceException;
 import com.example.project_backend_thermoelectric.exception.NotFoundResourceException;
-import com.example.project_backend_thermoelectric.repositiory.operations_manager.IDomainRepo;
-import com.example.project_backend_thermoelectric.repositiory.operations_manager.equipment.IEquipmentTypeRepo;
+import com.example.project_backend_thermoelectric.repository.operations_manager.IDomainRepo;
+import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentTypeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +30,16 @@ public class EquipmentTypeService implements IEquipmentTypeService {
     private IDomainRepo domainRepo;
 
     @Override
-    public Page<EquipmentTypeDto> searchEquipmentTypeDto(String name, String domain, Pageable pageable) {
-        return equipmentTypeRepo.searchEquipmentTypeDto("%" + name + "%", "%" + domain + "%", pageable);
+    public Page<EquipmentTypeDto> searchEquipmentTypeDto(
+            String name,
+            String domain,
+            Pageable pageable
+    ) {
+        return equipmentTypeRepo.searchEquipmentTypeDto(
+                name,
+                domain,
+                pageable
+        );
     }
 
 
