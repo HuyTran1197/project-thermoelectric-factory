@@ -1,4 +1,4 @@
-package com.example.project_backend_thermoelectric.repositiory.materials_manager;
+package com.example.project_backend_thermoelectric.repository.materials_manager;
 
 import com.example.project_backend_thermoelectric.entity.ReplacementMaterial;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
 package com.example.project_backend_thermoelectric.service.materials_manager;
 
 import com.example.project_backend_thermoelectric.entity.ConsumableMaterial;
-import com.example.project_backend_thermoelectric.repositiory.materials_manager.IConsumableMaterialRepository;
+import com.example.project_backend_thermoelectric.repository.materials_manager.IConsumableMaterialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
