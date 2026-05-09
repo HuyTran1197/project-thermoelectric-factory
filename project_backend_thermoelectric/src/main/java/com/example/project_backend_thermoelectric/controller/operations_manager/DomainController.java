@@ -14,7 +14,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/domains")
+@RequestMapping("/api/domains")
 public class DomainController {
     @Autowired
     private IDomainService domainService;
