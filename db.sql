@@ -331,3 +331,162 @@ CREATE TABLE tool_borrowings (
     FOREIGN KEY (tool_id) REFERENCES tools(id),
     FOREIGN KEY (employee_id) REFERENCES employees(id)
 ) ENGINE=InnoDB;
+
+
+INSERT INTO parameter_definitions (name, unit, type_id) VALUES
+
+-- ================= BƠM (1) =================
+('Lưu lượng', 'm3/h', 1),
+('Cột áp', 'm', 1),
+('Công suất', 'kW', 1),
+('Tốc độ quay', 'vòng/phút', 1),
+('Hiệu suất', '%', 1),
+('Đường kính ống hút', 'mm', 1),
+('Đường kính ống xả', 'mm', 1),
+('Hãng sản xuất', NULL, 1),
+('Model', NULL, 1),
+('Năm sản xuất', NULL, 1),
+
+-- ================= QUẠT (2) =================
+('Lưu lượng gió', 'm3/h', 2),
+('Áp suất', 'Pa', 2),
+('Công suất', 'kW', 2),
+('Tốc độ quay', 'vòng/phút', 2),
+('Hiệu suất', '%', 2),
+('Đường kính cánh', 'mm', 2),
+('Hãng sản xuất', NULL, 2),
+('Model', NULL, 2),
+
+-- ================= MÁY NÉN (3) =================
+('Lưu lượng khí', 'm3/h', 3),
+('Áp suất đầu ra', 'bar', 3),
+('Công suất', 'kW', 3),
+('Tốc độ quay', 'vòng/phút', 3),
+('Nhiệt độ làm việc', '°C', 3),
+('Hãng sản xuất', NULL, 3),
+('Model', NULL, 3),
+
+-- ================= VAN (4) =================
+('Đường kính danh nghĩa', 'mm', 4),
+('Áp suất làm việc', 'bar', 4),
+('Nhiệt độ làm việc', '°C', 4),
+('Loại van', NULL, 4),
+('Vật liệu', NULL, 4),
+('Kiểu kết nối', NULL, 4),
+('Hãng sản xuất', NULL, 4),
+
+-- ================= ĐỘNG CƠ (6) =================
+('Công suất', 'kW', 6),
+('Điện áp', 'V', 6),
+('Dòng điện', 'A', 6),
+('Tần số', 'Hz', 6),
+('Tốc độ quay', 'vòng/phút', 6),
+('Hiệu suất', '%', 6),
+('Hệ số công suất', 'cosφ', 6),
+('Cấp cách điện', NULL, 6),
+('Hãng sản xuất', NULL, 6),
+('Model', NULL, 6),
+
+-- ================= MÁY BIẾN ÁP (7) =================
+('Công suất định mức', 'kVA', 7),
+('Điện áp sơ cấp', 'kV', 7),
+('Điện áp thứ cấp', 'kV', 7),
+('Dòng điện', 'A', 7),
+('Tần số', 'Hz', 7),
+('Tổ đấu dây', NULL, 7),
+('Hãng sản xuất', NULL, 7),
+('Năm sản xuất', NULL, 7),
+
+-- ================= THIẾT BỊ ĐO (5) =================
+('Loại tín hiệu', NULL, 5),
+('Dải đo', NULL, 5),
+('Độ chính xác', '%', 5),
+('Nguồn cấp', 'V', 5),
+('Tín hiệu đầu ra', NULL, 5),
+('Hãng sản xuất', NULL, 5),
+('Model', NULL,5),
+
+-- ================= THIẾT BỊ ĐIỀU KHIỂN (8) =================
+('Điện áp hoạt động', 'V', 8),
+('Dòng điện', 'A', 8),
+('Giao thức truyền thông', NULL, 8),
+('Số kênh I/O', NULL, 8),
+('Nhiệt độ làm việc', '°C', 8),
+('Hãng sản xuất', NULL, 8),
+('Model', NULL, 8);
+
+select et.name as type,e.name as name,e.code as kks,pd.name as parameters,ep.value as value 
+from equipment_types et
+join equipments e on e.type_id = et.id
+join parameter_definitions pd on pd.type_id = et.id
+left join equipment_parameters ep on ep.parameter_id = pd.id
+and ep.equipment_id = e.id
+where et.name = 'Động cơ'
+and e.id = 3;
+
+select * from equipments
+where type_id = 5;
+
+INSERT INTO equipment_parameters (equipment_id, parameter_id, value) VALUES
+
+-- =====================================================
+-- 1. BƠM CẤP NƯỚC THÔ (equipment_id = 1)
+-- type_id = 1 (Bơm)
+-- =====================================================
+(1, 1, '850'),
+(1, 2, '180'),
+(1, 3, '3200'),
+(1, 4, '2980'),
+(1, 5, '89'),
+(1, 6, '250'),
+(1, 7, '200'),
+(1, 8, 'KSB'),
+(1, 9, 'HGC-450'),
+(1, 10, '2020'),
+
+-- =====================================================
+-- 2. ĐỘNG CƠ BƠM NƯỚC THÔ (equipment_id = 3)
+-- type_id = 6 (Động cơ)
+-- parameter_id = 33 -> 42
+-- =====================================================
+(3, 33, '315'),
+(3, 34, '6000'),
+(3, 35, '38'),
+(3, 36, '50'),
+(3, 37, '2980'),
+(3, 38, '95'),
+(3, 39, '0.89'),
+(3, 40, 'F'),
+(3, 41, 'ABB'),
+(3, 42, 'MOTOR-315'),
+
+-- =====================================================
+-- 3. ĐỒNG HỒ ĐO ÁP SUẤT DẦU (equipment_id = 5)
+-- type_id = 5 (Thiết bị đo)
+-- parameter_id = 51 -> 57
+-- =====================================================
+(5, 51, '4-20mA'),
+(5, 52, '0-25 bar'),
+(5, 53, '0.5'),
+(5, 54, '24'),
+(5, 55, 'Analog'),
+(5, 56, 'Yokogawa'),
+(5, 57, 'EJA530A'),
+
+-- =====================================================
+-- 4. THIẾT BỊ CẢM BIẾN HƠI NÓNG (equipment_id = 6)
+-- type_id = 5 (Thiết bị đo)
+-- =====================================================
+(6, 51, '4-20mA'),
+(6, 52, '0-600 °C'),
+(6, 53, '0.2'),
+(6, 54, '24'),
+(6, 55, 'Analog'),
+(6, 56, 'Siemens'),
+(6, 57, 'SITRANS TS');
+
+select e.name as equipment,pd.name as parameter, ep.value as value
+ from equipment_parameters ep
+join equipments e on e.id = ep.equipment_id
+join parameter_definitions pd on pd.id = ep.parameter_id;
+
