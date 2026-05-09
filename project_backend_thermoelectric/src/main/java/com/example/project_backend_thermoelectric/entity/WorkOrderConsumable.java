@@ -4,11 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(
+        name = "work_order_consumables",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"work_order_id", "material_id"})
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "work_order_consumables")
 public class WorkOrderConsumable {
 
     @Id
@@ -17,11 +22,13 @@ public class WorkOrderConsumable {
 
     private Integer quantity;
 
+    // FK tới work_order
     @ManyToOne
-    @JoinColumn(name = "work_order_id")
+    @JoinColumn(name = "work_order_id", nullable = false)
     private WorkOrder workOrder;
 
+    // FK tới material
     @ManyToOne
-    @JoinColumn(name = "material_id")
+    @JoinColumn(name = "material_id", nullable = false)
     private ConsumableMaterial material;
 }

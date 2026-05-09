@@ -1,6 +1,9 @@
 package com.example.project_backend_thermoelectric.entity;
 
+import com.example.project_backend_thermoelectric.enums.TransactionType; // Import enum của bạn
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "replacement_transactions")
 public class ReplacementTransaction {
 
@@ -17,18 +21,27 @@ public class ReplacementTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Loại giao dịch không được để trống")
+    @Column(nullable = false, length = 10)
+    private TransactionType type;
 
+    @NotNull(message = "Số lượng không được để trống")
+    @Min(value = 1, message = "Số lượng phải lớn hơn hoặc bằng 1")
+    @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "created_at")
+    @NotNull(message = "Ngày tạo không được để trống")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "material_id")
+    @NotNull(message = "Vật tư không được bỏ trống")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "material_id", nullable = false)
     private ReplacementMaterial material;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
+    @NotNull(message = "Người tạo không được bỏ trống")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 }
