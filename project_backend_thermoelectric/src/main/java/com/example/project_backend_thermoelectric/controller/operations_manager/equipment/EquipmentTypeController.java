@@ -18,7 +18,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/equipment-types")
+@RequestMapping("/api/equipment-types")
 public class EquipmentTypeController {
     @Autowired
     private IEquipmentTypeService equipmentTypeService;
