@@ -1,4 +1,4 @@
-package com.example.project_backend_thermoelectric.repository;
+package com.example.project_backend_thermoelectric.repository.tool;
 
 import com.example.project_backend_thermoelectric.entity.ToolBorrowing;
 import org.springframework.data.jpa.repository.JpaRepository;
