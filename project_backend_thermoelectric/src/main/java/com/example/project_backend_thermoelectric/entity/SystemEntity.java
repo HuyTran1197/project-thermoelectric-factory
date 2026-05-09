@@ -13,7 +13,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "systems")
+@Table(
+        name = "systems",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "description"})
+)
 public class SystemEntity {
 
     @Id
