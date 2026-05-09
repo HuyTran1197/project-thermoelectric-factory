@@ -26,8 +26,7 @@ public class ToolBorrowing {
     private String status;
 
     private String note;
-
-    @NotNull(message = "Ngày mượn không được để trống")
+    
     @Column(name = "borrow_date")
     private LocalDateTime borrowDate;
 

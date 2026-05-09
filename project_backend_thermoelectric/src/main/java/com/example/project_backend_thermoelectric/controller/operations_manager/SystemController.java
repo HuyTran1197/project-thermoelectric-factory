@@ -16,7 +16,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/system-equipments")
+@RequestMapping("/api/system-equipments")
 public class SystemController {
     @Autowired
     private ISystemEntityService systemService;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/equipments")
+@RequestMapping("/api/equipments")
 public class EquipmentController {
     @Autowired
     private IEquipmentService equipmentService;
