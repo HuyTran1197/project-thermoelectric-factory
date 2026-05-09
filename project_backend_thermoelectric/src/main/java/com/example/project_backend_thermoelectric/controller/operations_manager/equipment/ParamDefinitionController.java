@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/param-definitions")
+@RequestMapping("/api/param-definitions")
 public class ParamDefinitionController {
     @Autowired
     private IParameterDefinitionService parameterDefinitionService;

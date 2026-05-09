@@ -1,7 +1,7 @@
 package com.example.project_backend_thermoelectric.service.operations_manager;
 
 import com.example.project_backend_thermoelectric.entity.Domain;
-import com.example.project_backend_thermoelectric.repositiory.operations_manager.IDomainRepo;
+import com.example.project_backend_thermoelectric.repository.operations_manager.IDomainRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
