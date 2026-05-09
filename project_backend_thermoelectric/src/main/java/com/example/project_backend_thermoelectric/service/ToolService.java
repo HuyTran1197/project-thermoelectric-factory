@@ -1,7 +1,7 @@
 package com.example.project_backend_thermoelectric.service;
 
 import com.example.project_backend_thermoelectric.entity.Tool;
-import com.example.project_backend_thermoelectric.repository.ToolRepository;
+import com.example.project_backend_thermoelectric.repository.tool.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +17,10 @@ public class ToolService {
 
     public List<Tool> getAllTools() {
         return toolRepository.findAll();
+    }
+
+    public List<Tool> searchTools(String name, String code, String type) {
+        return toolRepository.searchTools(name, code, type);
     }
 
     public Optional<Tool> getToolById(Long id) {

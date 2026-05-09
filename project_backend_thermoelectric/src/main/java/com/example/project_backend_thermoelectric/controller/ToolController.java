@@ -18,7 +18,12 @@ public class ToolController {
     private ToolService toolService;
 
     @GetMapping
-    public List<Tool> getAllTools() {
+    public List<Tool> getAllTools(@RequestParam(required = false) String name,
+                                  @RequestParam(required = false) String code,
+                                  @RequestParam(required = false) String type) {
+        if (name != null || code != null || type != null) {
+            return toolService.searchTools(name, code, type);
+        }
         return toolService.getAllTools();
     }
 

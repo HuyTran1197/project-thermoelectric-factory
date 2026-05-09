@@ -2,8 +2,8 @@ package com.example.project_backend_thermoelectric.service;
 
 import com.example.project_backend_thermoelectric.entity.Tool;
 import com.example.project_backend_thermoelectric.entity.ToolBorrowing;
-import com.example.project_backend_thermoelectric.repository.ToolBorrowingRepository;
-import com.example.project_backend_thermoelectric.repository.ToolRepository;
+import com.example.project_backend_thermoelectric.repository.tool.ToolBorrowingRepository;
+import com.example.project_backend_thermoelectric.repository.tool.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
