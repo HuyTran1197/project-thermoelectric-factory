@@ -1,0 +1,11 @@
+package com.example.project_backend_thermoelectric.repositiory;
+
+import com.example.project_backend_thermoelectric.entity.UserRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface IUserRoleRepo extends JpaRepository<UserRole, Long> {
+    List<UserRole> findByUserId(Long userId);
+    boolean existsByUserIdAndRoleId(Long userId, Long roleId);
+    void deleteByUserIdAndRoleId(Long userId, Long roleId);
+}
