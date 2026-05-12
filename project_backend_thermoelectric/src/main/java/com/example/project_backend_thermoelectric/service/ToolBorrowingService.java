@@ -70,4 +70,42 @@ public class ToolBorrowingService {
         borrowing.setStatus("RETURNED");
         return borrowingRepository.save(borrowing);
     }
+
+    @Transactional
+    public ToolBorrowing updateBorrowing(Long id, ToolBorrowing updatedBorrowing) {
+        ToolBorrowing existingBorrowing = borrowingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Borrowing record not found"));
+
+        if ("RETURNED".equals(existingBorrowing.getStatus())) {
+            throw new RuntimeException("Cannot edit a returned borrowing record");
+        }
+
+        // Handle quantity change
+        if (updatedBorrowing.getQuantity() != null && !updatedBorrowing.getQuantity().equals(existingBorrowing.getQuantity())) {
+            if (updatedBorrowing.getQuantity() <= 0) {
+                throw new RuntimeException("Invalid quantity");
+            }
+
+            Tool tool = existingBorrowing.getTool();
+            int diff = updatedBorrowing.getQuantity() - existingBorrowing.getQuantity();
+
+            if (tool.getAvailableQuantity() < diff) {
+                throw new RuntimeException("Not enough tools available in stock to increase borrowing quantity");
+            }
+
+            tool.setAvailableQuantity(tool.getAvailableQuantity() - diff);
+            toolRepository.save(tool);
+            existingBorrowing.setQuantity(updatedBorrowing.getQuantity());
+        }
+
+        if (updatedBorrowing.getNote() != null) {
+            existingBorrowing.setNote(updatedBorrowing.getNote());
+        }
+        
+        if (updatedBorrowing.getDueDate() != null) {
+            existingBorrowing.setDueDate(updatedBorrowing.getDueDate());
+        }
+
+        return borrowingRepository.save(existingBorrowing);
+    }
 }
