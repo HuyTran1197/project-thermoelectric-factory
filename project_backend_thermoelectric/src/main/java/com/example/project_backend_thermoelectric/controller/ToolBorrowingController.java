@@ -38,4 +38,13 @@ public class ToolBorrowingController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBorrowing(@PathVariable Long id, @RequestBody ToolBorrowing borrowing) {
+        try {
+            return ResponseEntity.ok(borrowingService.updateBorrowing(id, borrowing));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
