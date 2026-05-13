@@ -23,9 +23,9 @@ public class EmployeeService implements IEmployeeService {
     @Override
     public Employee createEmployee(Employee employee, Long departmentId, Long positionId) {
         Department department = departmentRepo.findById(departmentId).orElseThrow(
-                ()->new RuntimeException("Department Not Found"));
+                ()->new RuntimeException("Không tìm thấy phòng!"));
         Position position = positionRepo.findById(positionId).orElseThrow(
-                ()->new RuntimeException("Position Not Found"));
+                ()->new RuntimeException("Không tìm thấy chức vụ!"));
         employee.setDepartment(department);
         employee.setPosition(position);
         return employeeRepo.save(employee);
@@ -37,15 +37,15 @@ public class EmployeeService implements IEmployeeService {
     @Override
     public Employee getEmployeeById(Long id){
         return employeeRepo.findById(id).orElseThrow(
-                ()->new RuntimeException("Employee Not Found"));
+                ()->new RuntimeException("Không tìm thấy nhân viên!"));
     }
     @Override
     public Employee updateEmployee(Long id, Employee request, Long departmentId, Long positionId) {
         Employee employee = getEmployeeById(id);
         Department department = departmentRepo.findById(departmentId).orElseThrow(
-                ()->new RuntimeException("Department Not Found"));
+                ()->new RuntimeException("Không tìm thấy phòng!"));
         Position position = positionRepo.findById(positionId).orElseThrow(
-                ()->new RuntimeException("Position Not Found"));
+                ()->new RuntimeException("Không tìm thấy chức vụ!"));
         employee.setFullName(request.getFullName());
         employee.setDepartment(department);
         employee.setPosition(position);
@@ -54,7 +54,7 @@ public class EmployeeService implements IEmployeeService {
     @Override
     public void deleteEmployee(Long id){
         if(!employeeRepo.existsById(id)){
-            throw new RuntimeException("Employee Not Found");
+            throw new RuntimeException("Không tìm thấy nhân viên!");
         }
         employeeRepo.deleteById(id);
     }

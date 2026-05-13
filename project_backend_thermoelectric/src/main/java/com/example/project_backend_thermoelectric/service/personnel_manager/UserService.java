@@ -27,10 +27,10 @@ public class UserService implements IUserService {
     @Override
     public User createUser(User user, Long employeeId) {
         if(userRepo.existsByUsername(user.getUsername())){
-            throw new RuntimeException("Username is already in use");
+            throw new RuntimeException("Username Đã được sử dụng!");
         }
         Employee employee = employeeRepo.findById(employeeId).orElseThrow(
-                () -> new RuntimeException("Employee not found"));
+                () -> new RuntimeException("Không tìm thấy nhân viên!"));
         user.setEmployee(employee);
         return userRepo.save(user);
     }
@@ -41,7 +41,7 @@ public class UserService implements IUserService {
     @Override
     public User getUserById(Long id) {
         return userRepo.findById(id).orElseThrow(
-                () -> new RuntimeException("User not found"));
+                () -> new RuntimeException("Không tìm thấy user!"));
     }
     @Override
     public User updateUser(Long id, User request) {
@@ -53,18 +53,18 @@ public class UserService implements IUserService {
     @Override
     public void deleteUser(Long id) {
         if (!userRepo.existsById(id)) {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("Không tìm thấy user!");
         }
         userRepo.deleteById(id);
     }
     @Override
     public void addRoleToUser(Long userId, Long roleId) {
         if(userRoleRepo.existsByUserIdAndRoleId(userId, roleId)){
-            throw new RuntimeException("Username is already in use");
+            throw new RuntimeException("Username Đã được sử dụng!");
         }
         User user = getUserById(userId);
         Role  role = roleRepo.findById(roleId).orElseThrow(
-                () -> new RuntimeException("Role not found"));
+                () -> new RuntimeException("Không tìm thấy role!"));
         UserRole userRole = new UserRole();
         userRole.setUser(user);
         userRole.setRole(role);
@@ -73,7 +73,7 @@ public class UserService implements IUserService {
     @Override
     public void removeRoleFromUser(Long userId, Long roleId) {
         if(!userRoleRepo.existsByUserIdAndRoleId(userId, roleId)){
-            throw new RuntimeException("Username is not already in use");
+            throw new RuntimeException("Tên người dùng chưa được sử dụng!");
         }
         userRoleRepo.deleteByUserIdAndRoleId(userId, roleId);
     }
