@@ -16,7 +16,7 @@ public class DepartmentService implements IDepartmentService {
     @Override
     public Department createDepartment(Department department) {
         if(departmentRepo.existsByName(department.getName())){
-            throw new RuntimeException("Department already exists");
+            throw new RuntimeException("Phòng đã tồn tại!");
         }
         return departmentRepo.save(department);
     }
@@ -27,7 +27,7 @@ public class DepartmentService implements IDepartmentService {
     @Override
     public Department getDepartmentById(Long id) {
         return departmentRepo.findById(id).orElseThrow(
-                () -> new RuntimeException("Department not found"));
+                () -> new RuntimeException("Không tìm thấy phòng"));
     }
     @Override
     public Department updateDepartment(Long id, Department request) {
@@ -38,7 +38,7 @@ public class DepartmentService implements IDepartmentService {
     @Override
     public void deleteDepartment(Long id) {
         if(!departmentRepo.existsById(id)){
-            throw new RuntimeException("Department not found");
+            throw new RuntimeException("Không tìm thấy phòng!");
         }
         departmentRepo.deleteById(id);
     }

@@ -20,4 +20,10 @@ public class GlobalExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntime(RuntimeException e){
+        return ResponseEntity.badRequest()
+                .body(e.getMessage());
+    }
 }
