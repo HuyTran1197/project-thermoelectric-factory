@@ -25,9 +25,11 @@ public class EquipmentController {
     public ResponseEntity<Page<EquipmentDto>> showList(@RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "") String name,
                                                        @RequestParam(defaultValue = "") String code,
+                                                       @RequestParam(defaultValue = "") String system,
+                                                       @RequestParam(defaultValue = "") String type,
                                                        @RequestParam(defaultValue = "") String status) {
-        Pageable pageable = PageRequest.of(page, 5);
-        Page<EquipmentDto> equipmentTypeDtos = equipmentService.searchEquipmentDto(name, code, status, pageable);
+        Pageable pageable = PageRequest.of(page, 3);
+        Page<EquipmentDto> equipmentTypeDtos = equipmentService.searchEquipmentDto(name, code, status,system,type, pageable);
         return ResponseEntity.ok(equipmentTypeDtos);
     }
 

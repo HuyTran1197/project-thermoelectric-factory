@@ -6,10 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface IParameterDefinitionService {
     Page<ParameterDefinitionDto> searchAllParameterDefinition(@Param("name")String name,
                                                               Pageable pageable);
 
     ParameterDefinition add(ParameterDefinition parameterDefinition);
     ParameterDefinition edit(Long id,ParameterDefinition parameterDefinition);
+
+    List<ParameterDefinition> findParameterDefinitionByTypeId(@Param("typeId") Long typeId);
 }

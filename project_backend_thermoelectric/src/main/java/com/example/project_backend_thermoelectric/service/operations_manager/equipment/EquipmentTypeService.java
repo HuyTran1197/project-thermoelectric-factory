@@ -79,6 +79,7 @@ public class EquipmentTypeService implements IEquipmentTypeService {
             throw new NotFoundResourceException("Không tìm thấy dữ liệu !!");
         }
 
+        String name = header.getName();
         String type = header.getType();
         String kks = header.getKks();
 
@@ -95,6 +96,7 @@ public class EquipmentTypeService implements IEquipmentTypeService {
         }
 
         return new EquipmentTypeDetailResponse(
+                name,
                 type,
                 kks,
                 parameters
