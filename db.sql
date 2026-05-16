@@ -490,3 +490,15 @@ select e.name as equipment,pd.name as parameter, ep.value as value
 join equipments e on e.id = ep.equipment_id
 join parameter_definitions pd on pd.id = ep.parameter_id;
 
+-- EquipmentRequestDto
+select e.id as equipmentId,pd.id as paramId,e.name as name,
+e.code as code, e.system_id as systemId, e.type_id as typeId,
+pd.name as paramName,pd.unit as unit,ep.value as value,
+e.status as status 
+from equipments e
+join equipment_types et on et.id = e.type_id
+join parameter_definitions pd on pd.type_id = et.id
+join equipment_parameters ep on ep.parameter_id = pd.id;
+
+
+

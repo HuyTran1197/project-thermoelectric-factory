@@ -15,7 +15,7 @@ public class PositionService implements IPositionService {
     @Override
     public Position createPosition(Position position) {
         if(positionRepo.existsByName(position.getName())) {
-            throw new RuntimeException("Position already exists");
+            throw new RuntimeException("Chức vụ đã tồn tại!");
         }
         return positionRepo.save(position);
     }
@@ -26,7 +26,7 @@ public class PositionService implements IPositionService {
     @Override
     public Position getPositionById(Long id) {
         return positionRepo.findById(id).orElseThrow(
-                () -> new RuntimeException("Position Not Found"));
+                () -> new RuntimeException("Không tìm thấy chức vụ!"));
     }
     @Override
     public Position updatePosition(Long id, Position request) {
@@ -37,7 +37,7 @@ public class PositionService implements IPositionService {
     @Override
     public void deletePosition(Long id) {
         if(!positionRepo.existsById(id)) {
-            throw new RuntimeException("Position Not Found");
+            throw new RuntimeException("Không tìm thấy chức vụ!");
         }
         positionRepo.deleteById(id);
     }

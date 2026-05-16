@@ -11,10 +11,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IEquipmentService {
-    Page<EquipmentDto> searchEquipmentDto(@Param("searchName") String name,
-                                          @Param("searchCode") String code,
-                                          @Param("searchStatus") String status,
-                                          Pageable pageable);
+    Page<EquipmentDto> searchEquipmentDto(
+            @Param("name") String name,
+            @Param("code") String code,
+            @Param("system") String system,
+            @Param("type") String type,
+            @Param("status") String status,
+            Pageable pageable
+    );
     Equipment add (EquipmentRequestDto equipment);
     Equipment edit (Long id, EquipmentRequestDto dto);
     Equipment findById (Long id);

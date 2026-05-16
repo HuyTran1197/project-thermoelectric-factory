@@ -13,6 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class EquipmentTypeDetailResponse {
 
+    private String name;
     private String type;
     private String kks;
     private Map<String,String> parameters;

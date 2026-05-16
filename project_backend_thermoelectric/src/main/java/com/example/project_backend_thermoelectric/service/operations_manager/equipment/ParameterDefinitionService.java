@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class ParameterDefinitionService implements IParameterDefinitionService{
@@ -58,5 +60,10 @@ public class ParameterDefinitionService implements IParameterDefinitionService{
         current.setUnit(parameterDefinition.getUnit());
         current.setType(type);
         return parameterDefinitionRepo.save(current);
+    }
+
+    @Override
+    public List<ParameterDefinition> findParameterDefinitionByTypeId(Long typeId) {
+        return parameterDefinitionRepo.findParameterDefinitionByTypeId(typeId);
     }
 }

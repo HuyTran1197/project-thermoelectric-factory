@@ -27,6 +27,10 @@ public class ParamDefinitionController {
                 parameterDefinitionService.searchAllParameterDefinition(name,pageable);
         return ResponseEntity.ok(parameterDefinitionDtos);
     }
+    @GetMapping("{typeId}/type")
+    public ResponseEntity<?> getParamByTypeId(@PathVariable Long typeId){
+        return new ResponseEntity<>(parameterDefinitionService.findParameterDefinitionByTypeId(typeId),HttpStatus.OK);
+    }
 
 
     @PostMapping

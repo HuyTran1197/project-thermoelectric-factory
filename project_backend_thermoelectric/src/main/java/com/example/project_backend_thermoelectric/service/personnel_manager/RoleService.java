@@ -16,7 +16,7 @@ public class RoleService implements IRoleService {
     @Override
     public Role createRole(Role role) {
         if(roleRepo.existsByName(role.getName())) {
-            throw new RuntimeException("Role already exists");
+            throw new RuntimeException("Role đã tồn tại!");
         }
         return roleRepo.save(role);
     }
@@ -27,7 +27,7 @@ public class RoleService implements IRoleService {
     @Override
     public Role getRoleById(Long id) {
         return roleRepo.findById(id).orElseThrow(
-                () -> new RuntimeException("Role id not found"));
+                () -> new RuntimeException("Không tìm thấy role!"));
     }
     @Override
     public Role updateRole(Long id, Role request) {
@@ -38,7 +38,7 @@ public class RoleService implements IRoleService {
     @Override
     public void deleteRole(Long id) {
         if(!roleRepo.existsById(id)) {
-            throw new RuntimeException("Role id not found");
+            throw new RuntimeException("Không tìm thấy role!");
         }
         roleRepo.deleteById(id);
     }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface IParameterDefinitionRepo extends JpaRepository<ParameterDefinition,Long> {
     @Query(value = "select name, " +
             "unit, type_id as type " +
@@ -23,4 +25,7 @@ public interface IParameterDefinitionRepo extends JpaRepository<ParameterDefinit
     boolean existsParameterDefinitionByNameAndType(@Param("name") String name,
                                                    @Param("typeId") Long typeId);
 
+    @Query(value = "select * from parameter_definitions p " +
+            "where p.type_id = :typeId",nativeQuery = true)
+    List<ParameterDefinition> findParameterDefinitionByTypeId(@Param("typeId") Long typeId);
 }
