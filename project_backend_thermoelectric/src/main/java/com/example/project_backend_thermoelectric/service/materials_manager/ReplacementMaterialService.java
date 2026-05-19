@@ -3,6 +3,8 @@ package com.example.project_backend_thermoelectric.service.materials_manager;
 import com.example.project_backend_thermoelectric.entity.ReplacementMaterial;
 import com.example.project_backend_thermoelectric.repository.materials_manager.IReplacementMaterialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +44,9 @@ public class ReplacementMaterialService implements IReplacementMaterialService {
     }
 
     @Override
-    public List<ReplacementMaterial> findByNameOrCode(String keyword) {
-        return replacementMaterialRepository.searchReplacementMaterial(keyword);
+    public Page<ReplacementMaterial> findByNameOrCode(String code, String name, Pageable pageable) {
+        return replacementMaterialRepository.searchReplacementMaterial(code, name, pageable);
     }
+
+
 }
