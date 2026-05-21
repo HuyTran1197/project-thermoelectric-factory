@@ -3,6 +3,8 @@ package com.example.project_backend_thermoelectric.service.materials_manager;
 import com.example.project_backend_thermoelectric.entity.ConsumableMaterial;
 import com.example.project_backend_thermoelectric.repository.materials_manager.IConsumableMaterialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,9 @@ public class ConsumableMaterialService implements IConsumableMaterialService {
 
     @Override
     public ConsumableMaterial add(ConsumableMaterial consumableMaterial) {
+        if (consumableMaterialRepository.existsByCode(consumableMaterial.getCode())) {
+            throw new IllegalArgumentException("Mã vật tư đã tồn tại!");
+        }
        return consumableMaterialRepository.save(consumableMaterial);
     }
 
@@ -42,7 +47,9 @@ public class ConsumableMaterialService implements IConsumableMaterialService {
     }
 
     @Override
-    public List<ConsumableMaterial> findByNameOrCode(String keyword) {
-        return consumableMaterialRepository.searchConsumableMaterial(keyword);
+    public Page<ConsumableMaterial> findByNameOrCode(String code, String name, Pageable pageable) {
+        return consumableMaterialRepository.searchConsumableMaterial(code, name, pageable);
     }
+
+
 }

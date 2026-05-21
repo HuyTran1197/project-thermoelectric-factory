@@ -1,16 +1,17 @@
 package com.example.project_backend_thermoelectric.service.operations_manager.equipment;
 
+import com.example.project_backend_thermoelectric.dto.operations_manager.request.EquipmentParameterRequestDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.request.EquipmentRequestDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.response.EquipmentDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.detail.EquipmentByTypeDto;
-import com.example.project_backend_thermoelectric.entity.Equipment;
-import com.example.project_backend_thermoelectric.entity.EquipmentType;
-import com.example.project_backend_thermoelectric.entity.SystemEntity;
+import com.example.project_backend_thermoelectric.entity.*;
 import com.example.project_backend_thermoelectric.exception.DuplicateResourceException;
 import com.example.project_backend_thermoelectric.exception.NotFoundResourceException;
 import com.example.project_backend_thermoelectric.repository.operations_manager.ISystemEntityRepo;
+import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentParameterRepo;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentTypeRepo;
+import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IParameterDefinitionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +29,18 @@ public class EquipmentService implements IEquipmentService{
     private IEquipmentTypeRepo equipmentTypeRepo;
     @Autowired
     private ISystemEntityRepo systemEntityRepo;
+    @Autowired
+    private IParameterDefinitionRepo parameterDefinitionRepo;
+    @Autowired
+    private IEquipmentParameterRepo equipmentParameterRepo;
 
     @Override
-    public Page<EquipmentDto> searchEquipmentDto(String name, String code, String status, Pageable pageable) {
-        return equipmentRepo.searchEquipmentDto("%"+name+"%","%"+code+"%","%"+status+"%",pageable);
+    public Page<EquipmentDto> searchEquipmentDto(String name, String code, String status,String system,String type, Pageable pageable) {
+        return equipmentRepo.searchEquipmentDto("%"+name+"%",
+                "%"+code+"%",
+                "%"+system+"%",
+                "%"+type+"%",
+                "%"+status+"%",pageable);
     }
 
     @Override
@@ -55,7 +64,24 @@ public class EquipmentService implements IEquipmentService{
         equipment.setSystem(system);
         equipment.setType(type);
 
-        return equipmentRepo.save(equipment);
+        Equipment savedEquipment = equipmentRepo.save(equipment);
+
+        for (EquipmentParameterRequestDto p : dto.getParameters()) {
+            ParameterDefinition parameter = parameterDefinitionRepo
+                    .findById(p.getParameterId())
+                    .orElseThrow(() ->
+                            new NotFoundResourceException("Thông số không tồn tại !!"));
+
+            EquipmentParameter equipmentParameter = new EquipmentParameter();
+
+            equipmentParameter.setEquipment(savedEquipment);
+            equipmentParameter.setParameter(parameter);
+            equipmentParameter.setValue(p.getValue());
+
+            equipmentParameterRepo.save(equipmentParameter);
+        }
+
+        return savedEquipment;
     }
 
     @Override
