@@ -6,6 +6,7 @@ import com.example.project_backend_thermoelectric.dto.personnel_manager.UpdateEm
 import com.example.project_backend_thermoelectric.entity.Employee;
 import com.example.project_backend_thermoelectric.service.personnel_manager.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +33,14 @@ public class EmployeeController {
     @GetMapping
     public List<Employee> getAllEmployees() {
         return employeeService.getAllEmployees();
+    }
+
+    @GetMapping("/search")
+    public Page<Employee> searchEmployees(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        return employeeService.searchEmployees(keyword, page, size);
     }
 
     @GetMapping("/{id}")

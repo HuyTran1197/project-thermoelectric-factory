@@ -2,9 +2,12 @@ package com.example.project_backend_thermoelectric.controller.personnel_manager;
 
 import com.example.project_backend_thermoelectric.dto.personnel_manager.CreateUserDto;
 import com.example.project_backend_thermoelectric.dto.personnel_manager.UpdateUserDto;
+import com.example.project_backend_thermoelectric.dto.personnel_manager.UserDto;
 import com.example.project_backend_thermoelectric.entity.User;
+import com.example.project_backend_thermoelectric.service.personnel_manager.IUserRoleService;
 import com.example.project_backend_thermoelectric.service.personnel_manager.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,58 +19,34 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @PostMapping
-    public User createUser(@RequestBody CreateUserDto request) {
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-
-        return userService.createUser(user, request.getEmployeeId());
-    }
-
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public Page<UserDto> searchUsers(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return userService.searchUsers(keyword, page, size);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public UserDto getUserById(@PathVariable Long id) {
+        return userService.getUserDtoById(id);
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(
-            @PathVariable Long id,
-            @RequestBody UpdateUserDto request
-    ) {
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-
-        return userService.updateUser(id, user);
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return "Delete user successfully";
+    @PostMapping
+    public UserDto createUser(@RequestBody CreateUserDto dto) {
+        return userService.createUser(dto);
     }
 
     @PostMapping("/{userId}/roles/{roleId}")
-    public String addRoleToUser(
-            @PathVariable Long userId,
-            @PathVariable Long roleId
-    ) {
+    public String assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
         userService.addRoleToUser(userId, roleId);
-        return "Add role to user successfully";
+        return "Gán role thành công";
     }
 
     @DeleteMapping("/{userId}/roles/{roleId}")
-    public String removeRoleFromUser(
-            @PathVariable Long userId,
-            @PathVariable Long roleId
-    ) {
+    public String removeRole(@PathVariable Long userId, @PathVariable Long roleId) {
         userService.removeRoleFromUser(userId, roleId);
-        return "Remove role from user successfully";
+        return "Gỡ role thành công";
     }
 }
