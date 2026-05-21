@@ -4,6 +4,7 @@ import com.example.project_backend_thermoelectric.dto.personnel_manager.Position
 import com.example.project_backend_thermoelectric.entity.Position;
 import com.example.project_backend_thermoelectric.service.personnel_manager.IPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,14 @@ public class PositionController {
     @GetMapping
     public List<Position> getAllPositions() {
         return positionService.getAllPositions();
+    }
+
+    @GetMapping("/search")
+    public Page<Position> searchPositions(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        return positionService.searchPositions(keyword, page, size);
     }
 
     @GetMapping("/{id}")

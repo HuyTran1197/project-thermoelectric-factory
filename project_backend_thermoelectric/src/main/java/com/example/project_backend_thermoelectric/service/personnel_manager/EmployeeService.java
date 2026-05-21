@@ -7,6 +7,8 @@ import com.example.project_backend_thermoelectric.repository.personnel_manager.I
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IEmployeeRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IPositionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,15 +32,34 @@ public class EmployeeService implements IEmployeeService {
         employee.setPosition(position);
         return employeeRepo.save(employee);
     }
+
+    @Override
+    public Page<Employee> searchEmployees(String keyword, int page, int size) {
+        return employeeRepo.findByFullNameContainingIgnoreCase(
+                keyword != null ? keyword : "",
+                PageRequest.of(page, size)
+        );
+    }
+
     @Override
     public List<Employee> getAllEmployees() {
         return employeeRepo.findAll();
     }
+
     @Override
     public Employee getEmployeeById(Long id){
         return employeeRepo.findById(id).orElseThrow(
                 ()->new RuntimeException("Không tìm thấy nhân viên!"));
     }
+
+    @Override
+    public List<Employee> searchEmployees(String keyword) {
+        if(keyword == null || keyword.isEmpty()) {
+            return employeeRepo.findAll();
+        }
+        return employeeRepo.findByFullNameContainingIgnoreCase(keyword);
+    }
+
     @Override
     public Employee updateEmployee(Long id, Employee request, Long departmentId, Long positionId) {
         Employee employee = getEmployeeById(id);
@@ -51,6 +72,7 @@ public class EmployeeService implements IEmployeeService {
         employee.setPosition(position);
         return employeeRepo.save(employee);
     }
+
     @Override
     public void deleteEmployee(Long id){
         if(!employeeRepo.existsById(id)){
