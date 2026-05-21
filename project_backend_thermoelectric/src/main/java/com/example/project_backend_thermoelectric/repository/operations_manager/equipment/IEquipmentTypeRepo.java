@@ -44,7 +44,7 @@ and (:searchDomain = '' or d.name like concat('%', :searchDomain, '%'))
                                       @Param("domainId") Long domainId);
 
     @Query(value = """
-    select 
+    select e.name as name,
         et.name as type,
         e.code as kks
     from equipment_types et

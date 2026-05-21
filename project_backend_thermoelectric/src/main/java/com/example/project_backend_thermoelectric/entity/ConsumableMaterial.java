@@ -38,11 +38,8 @@ public class ConsumableMaterial {
     @Column(nullable = false)
     private String unit;
 
-    @NotBlank(message = "Không được bỏ trống")
-    @Pattern(regexp = "^\\p{Lu}\\p{L}+(\\s\\p{L}+)*$",
-            message = "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
-    )
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     private String location;
 
     @Column(columnDefinition = "TEXT")

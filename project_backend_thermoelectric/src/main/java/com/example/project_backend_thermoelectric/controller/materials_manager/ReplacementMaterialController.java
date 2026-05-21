@@ -3,6 +3,9 @@ package com.example.project_backend_thermoelectric.controller.materials_manager;
 import com.example.project_backend_thermoelectric.entity.ReplacementMaterial;
 import com.example.project_backend_thermoelectric.service.materials_manager.IReplacementMaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,16 +18,19 @@ public class ReplacementMaterialController {
     @Autowired
     IReplacementMaterialService replacementMaterialService;
     @GetMapping
-    public ResponseEntity<List<ReplacementMaterial>> getAllOrSearch(
-            @RequestParam(required = false) String keyword) {
+    public ResponseEntity<Page<ReplacementMaterial>> getAllOrSearch(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String name) {
 
-        List<ReplacementMaterial> materials;
-        if (keyword != null && !keyword.isBlank()) {
-            materials = replacementMaterialService.findByNameOrCode(keyword);
-        } else {
-            materials = replacementMaterialService.findAll();
-        }
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<ReplacementMaterial> materials = replacementMaterialService.findByNameOrCode(code,name, pageable);
         return ResponseEntity.ok(materials);
+    }
+    @GetMapping("/list")
+    public ResponseEntity<List<ReplacementMaterial>> getAllWithoutPage() {
+        List<ReplacementMaterial> list = replacementMaterialService.findAll();
+        return ResponseEntity.ok(list);
     }
 
     @PostMapping

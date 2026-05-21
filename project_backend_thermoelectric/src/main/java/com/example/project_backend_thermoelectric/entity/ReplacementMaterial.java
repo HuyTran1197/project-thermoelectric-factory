@@ -27,7 +27,7 @@ public class ReplacementMaterial {
     private String name;
 
     @NotBlank(message = "Không được bỏ trống")
-    @Pattern(regexp = "^MAT-[0-9]{4}$",
+    @Pattern(regexp = "^REP-[0-9]{4}$",
             message = "Định dạng mã: MAT-XXXX với X là các số từ 0 đến 9"
     )
     @Column(nullable = false, unique = true)
