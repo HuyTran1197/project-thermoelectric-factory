@@ -27,6 +27,11 @@ public class ReplacementMaterialController {
         Page<ReplacementMaterial> materials = replacementMaterialService.findByNameOrCode(code,name, pageable);
         return ResponseEntity.ok(materials);
     }
+    @GetMapping("/list")
+    public ResponseEntity<List<ReplacementMaterial>> getAllWithoutPage() {
+        List<ReplacementMaterial> list = replacementMaterialService.findAll();
+        return ResponseEntity.ok(list);
+    }
 
     @PostMapping
     public ResponseEntity<ReplacementMaterial> save(@RequestBody ReplacementMaterial replacementMaterial) {

@@ -25,6 +25,9 @@ public class ConsumableMaterialService implements IConsumableMaterialService {
 
     @Override
     public ConsumableMaterial add(ConsumableMaterial consumableMaterial) {
+        if (consumableMaterialRepository.existsByCode(consumableMaterial.getCode())) {
+            throw new IllegalArgumentException("Mã vật tư đã tồn tại!");
+        }
        return consumableMaterialRepository.save(consumableMaterial);
     }
 

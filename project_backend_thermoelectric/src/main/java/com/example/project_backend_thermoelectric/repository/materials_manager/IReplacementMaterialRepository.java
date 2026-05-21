@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IReplacementMaterialRepository extends JpaRepository<ReplacementMaterial,Long> {
+    boolean existsByCode(String code);
     @Query("""
     SELECT r FROM ReplacementMaterial r
     WHERE (:code IS NULL OR :code = ''
