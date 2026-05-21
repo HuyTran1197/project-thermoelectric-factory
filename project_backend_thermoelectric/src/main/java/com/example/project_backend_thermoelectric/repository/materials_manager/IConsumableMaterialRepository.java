@@ -12,6 +12,8 @@ import java.util.List;
 
 @Repository
 public interface IConsumableMaterialRepository extends JpaRepository<ConsumableMaterial, Long>{
+    boolean existsByCode(String code);
+
     @Query("""
     SELECT c FROM ConsumableMaterial c
     WHERE (:code IS NULL OR :code = ''

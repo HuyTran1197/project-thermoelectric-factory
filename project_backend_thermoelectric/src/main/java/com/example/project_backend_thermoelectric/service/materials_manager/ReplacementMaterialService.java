@@ -25,6 +25,9 @@ public class ReplacementMaterialService implements IReplacementMaterialService {
 
     @Override
     public ReplacementMaterial add(ReplacementMaterial replacementMaterial) {
+        if (replacementMaterialRepository.existsByCode(replacementMaterial.getCode())) {
+            throw new IllegalArgumentException("Mã vật tư đã tồn tại!");
+        }
         return replacementMaterialRepository.save(replacementMaterial);
     }
 
