@@ -17,19 +17,23 @@ public class ToolBorrowingController {
     private ToolBorrowingService borrowingService;
 
     @GetMapping
-    public ResponseEntity<List<ToolBorrowing>> getAllBorrowings(
-            @RequestParam(required = false) String toolId,
-            @RequestParam(required = false) String user,
-            @RequestParam(required = false) String status) {
-        
-        boolean hasFilters = (toolId != null && !toolId.trim().isEmpty()) || 
-                             (user != null && !user.trim().isEmpty()) || 
-                             (status != null && !status.trim().isEmpty());
-                             
-        if (hasFilters) {
-            return ResponseEntity.ok(borrowingService.searchBorrowings(toolId, user, status));
-        }
-        return ResponseEntity.ok(borrowingService.getAllBorrowings());
+    public List<ToolBorrowing> getAllBorrowings(
+
+            @RequestParam(required = false)
+            String toolCode,
+
+            @RequestParam(required = false)
+            String employeeSearch,
+
+            @RequestParam(required = false)
+            String status
+    ) {
+
+        return borrowingService.searchBorrowings(
+                toolCode,
+                employeeSearch,
+                status
+        );
     }
 
     @GetMapping("/search")
