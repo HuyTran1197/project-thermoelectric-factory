@@ -5,16 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EquipmentTypeDetailResponse {
-
-    private String name;
-    private String type;
-    private String kks;
-    private List<EquipmentParamResponse> parameters;
+public class EquipmentParamResponse {
+    private String parameter;
+    private String unit;
+    private String value;
 }

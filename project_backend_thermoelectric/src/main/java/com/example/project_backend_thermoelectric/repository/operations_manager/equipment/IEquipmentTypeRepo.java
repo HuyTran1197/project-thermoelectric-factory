@@ -60,6 +60,7 @@ and (:searchDomain = '' or d.name like concat('%', :searchDomain, '%'))
     @Query(value = """
         select 
             pd.name as parameter,
+                    pd.unit as unit, 
             ep.value as value
         from parameter_definitions pd
         left join equipment_parameters ep
