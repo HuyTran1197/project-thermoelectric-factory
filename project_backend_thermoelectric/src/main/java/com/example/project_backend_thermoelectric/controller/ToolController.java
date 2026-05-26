@@ -5,6 +5,7 @@ import com.example.project_backend_thermoelectric.service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -18,13 +19,44 @@ public class ToolController {
     private ToolService toolService;
 
     @GetMapping
-    public List<Tool> getAllTools(@RequestParam(required = false) String name,
-                                  @RequestParam(required = false) String code,
-                                  @RequestParam(required = false) String type) {
-        if (name != null || code != null || type != null) {
-            return toolService.searchTools(name, code, type);
+    public Page<Tool> getAllTools(
+
+            @RequestParam(required = false)
+            String name,
+
+            @RequestParam(required = false)
+            String code,
+
+            @RequestParam(required = false)
+            String type,
+
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @RequestParam(defaultValue = "5")
+            int size
+    ) {
+
+        boolean hasSearch =
+                (name != null && !name.trim().isEmpty()) ||
+                        (code != null && !code.trim().isEmpty()) ||
+                        (type != null && !type.trim().isEmpty());
+
+        if (hasSearch) {
+
+            return toolService.searchTools(
+                    name,
+                    code,
+                    type,
+                    page,
+                    size
+            );
         }
-        return toolService.getAllTools();
+
+        return toolService.getAllTools(
+                page,
+                size
+        );
     }
 
     @GetMapping("/{id}")

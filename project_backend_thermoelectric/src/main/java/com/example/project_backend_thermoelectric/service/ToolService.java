@@ -3,6 +3,9 @@ package com.example.project_backend_thermoelectric.service;
 import com.example.project_backend_thermoelectric.entity.Tool;
 import com.example.project_backend_thermoelectric.repository.tool.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +18,34 @@ public class ToolService {
     @Autowired
     private ToolRepository toolRepository;
 
-    public List<Tool> getAllTools() {
-        return toolRepository.findAll();
+    public Page<Tool> getAllTools(
+            int page,
+            int size
+    ) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return toolRepository.findAll(pageable);
     }
 
-    public List<Tool> searchTools(String name, String code, String type) {
-        return toolRepository.searchTools(name, code, type);
+    public Page<Tool> searchTools(
+            String name,
+            String code,
+            String type,
+            int page,
+            int size
+    ) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return toolRepository.searchTools(
+                name,
+                code,
+                type,
+                pageable
+        );
     }
 
     public Optional<Tool> getToolById(Long id) {
