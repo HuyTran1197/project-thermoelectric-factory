@@ -1,5 +1,6 @@
 package com.example.project_backend_thermoelectric.service.operations_manager.equipment;
 
+import com.example.project_backend_thermoelectric.dto.operations_manager.request.EquipmentEditRequestDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.request.EquipmentRequestDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.response.EquipmentDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.detail.EquipmentByTypeDto;
@@ -21,7 +22,8 @@ public interface IEquipmentService {
     );
     Equipment add (EquipmentRequestDto equipment);
     Equipment edit (Long id, EquipmentRequestDto dto);
-    Equipment findById (Long id);
+    EquipmentEditRequestDto findById (Long id);
+    void deleteById(Long id);
 
     List<EquipmentByTypeDto> getEquipmentsByType(Long typeId);
 }

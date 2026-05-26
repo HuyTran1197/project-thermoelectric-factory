@@ -5,6 +5,7 @@ public interface EquipmentDto {
     String getName();
     String getCode();
     String getSystemName();
+    Long getTypeId();
     String getType();
     String getStatus();
 }
