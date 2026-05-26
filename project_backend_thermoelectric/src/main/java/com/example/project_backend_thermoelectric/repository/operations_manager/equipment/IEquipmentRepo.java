@@ -19,6 +19,7 @@ public interface IEquipmentRepo extends JpaRepository<Equipment, Long> {
                 e.name as name,
                 e.code as code,
                 s.name as systemName,
+                            et.id as typeId,
                 et.name as type,
                 e.status as status
             from equipments e
@@ -94,4 +95,6 @@ public interface IEquipmentRepo extends JpaRepository<Equipment, Long> {
     List<EquipmentByTypeDto> findByTypeId(
             @Param("typeId") Long typeId
     );
+
+    boolean existsEquipmentById(Long id);
 }
