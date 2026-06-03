@@ -7,6 +7,9 @@ import com.example.project_backend_thermoelectric.repository.tool.ToolRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,18 +23,54 @@ public class ToolBorrowingService {
     @Autowired
     private ToolRepository toolRepository;
 
-    public List<ToolBorrowing> getAllBorrowings() {
-        return borrowingRepository.searchBorrowings(null, null, null);
+    public Page<ToolBorrowing> getAllBorrowings(
+            int page,
+            int size
+    ) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return borrowingRepository.searchBorrowings(
+                null,
+                null,
+                null,
+                pageable
+        );
     }
 
-    public List<ToolBorrowing> searchBorrowings(String toolCode, String employeeSearch, String status) {
-        String tc = (toolCode != null && !toolCode.trim().isEmpty()) ? toolCode.trim() : null;
-        String es = (employeeSearch != null && !employeeSearch.trim().isEmpty()) ? employeeSearch.trim() : null;
-        String st = (status != null && !status.trim().isEmpty()) ? status.trim() : null;
-        
-        // Nếu tất cả các tham số đều null, trả về danh sách tất cả (hoặc tùy theo logic mong muốn)
-        // Ở đây repository đã xử lý IS NULL nên nếu tất cả null nó sẽ trả về tất cả.
-        return borrowingRepository.searchBorrowings(tc, es, st);
+    public Page<ToolBorrowing> searchBorrowings(
+            String toolCode,
+            String employeeSearch,
+            String status,
+            int page,
+            int size
+    ) {
+
+        String tc =
+                (toolCode != null && !toolCode.trim().isEmpty())
+                        ? toolCode.trim()
+                        : null;
+
+        String es =
+                (employeeSearch != null && !employeeSearch.trim().isEmpty())
+                        ? employeeSearch.trim()
+                        : null;
+
+        String st =
+                (status != null && !status.trim().isEmpty())
+                        ? status.trim()
+                        : null;
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return borrowingRepository.searchBorrowings(
+                tc,
+                es,
+                st,
+                pageable
+        );
     }
 
     @Transactional
