@@ -5,6 +5,7 @@ import com.example.project_backend_thermoelectric.service.ToolBorrowingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ public class ToolBorrowingController {
 
     @Autowired
     private ToolBorrowingService borrowingService;
-
     @GetMapping
-    public List<ToolBorrowing> getAllBorrowings(
+    public ResponseEntity<Page<ToolBorrowing>>
+    getAllBorrowings(
 
             @RequestParam(required = false)
             String toolCode,
@@ -26,23 +27,27 @@ public class ToolBorrowingController {
             String employeeSearch,
 
             @RequestParam(required = false)
-            String status
+            String status,
+
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @RequestParam(defaultValue = "5")
+            int size
     ) {
 
-        return borrowingService.searchBorrowings(
-                toolCode,
-                employeeSearch,
-                status
+        return ResponseEntity.ok(
+
+                borrowingService.searchBorrowings(
+                        toolCode,
+                        employeeSearch,
+                        status,
+                        page,
+                        size
+                )
         );
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<ToolBorrowing>> searchBorrowings(
-            @RequestParam(required = false) String toolCode,
-            @RequestParam(required = false) String employeeSearch,
-            @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(borrowingService.searchBorrowings(toolCode, employeeSearch, status));
-    }
 
     @PostMapping("/batch")
     public ResponseEntity<?> borrowToolsBatch(@RequestBody List<ToolBorrowing> borrowings) {
