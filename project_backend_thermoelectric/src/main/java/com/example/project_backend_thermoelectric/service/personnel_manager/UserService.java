@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService implements IUserService {
 
     @Autowired
@@ -36,14 +38,50 @@ public class UserService implements IUserService {
     @Autowired
     private IUserRoleRepo userRoleRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDto createUser(CreateUserDto dto) {
-        Employee emp = employeeRepo.findById(dto.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
+
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+
+            throw new RuntimeException(
+                    "Mật khẩu xác nhận không khớp"
+            );
+        }
+
+        if (userRepo.existsByUsername(dto.getUsername())) {
+
+            throw new RuntimeException(
+                    "Tên đăng nhập đã tồn tại"
+            );
+        }
+
+        if (userRepo.existsByEmployeeId(dto.getEmployeeId())) {
+
+            throw new RuntimeException(
+                    "Nhân viên này đã có tài khoản"
+            );
+        }
+
+        Employee employee = employeeRepo.findById(dto.getEmployeeId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Nhân viên không tồn tại"
+                        )
+                );
+
         User user = new User();
+
         user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword());
-        user.setEmployee(emp);
+
+        user.setPassword(
+                passwordEncoder.encode(dto.getPassword())
+        );
+
+        user.setEmployee(employee);
+
         user = userRepo.save(user);
 
         return mapToDTO(user);

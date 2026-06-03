@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
 @CrossOrigin("*")
 @RestController
@@ -24,8 +23,6 @@ public class EquipmentController {
     private IEquipmentService equipmentService;
     @Autowired
     private IEquipmentTypeService equipmentTypeService;
-    @Autowired
-    private RestClient.Builder builder;
 
 
     @GetMapping
