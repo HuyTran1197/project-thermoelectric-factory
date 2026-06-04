@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "requests")
-public class Request {
+@Table(name = "repair_order")
+public class RepairOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +30,8 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "equipment_id")
+    private Equipment equipment;
 }

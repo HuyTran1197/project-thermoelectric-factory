@@ -27,7 +27,7 @@ public class WorkOrder {
 
     @ManyToOne
     @JoinColumn(name = "request_id")
-    private Request request;
+    private RepairOrder request;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
