@@ -162,4 +162,9 @@ public interface IConsumableTransactionRepository extends JpaRepository<Consumab
 
             Pageable pageable
     );
+    @Query(value = "SELECT " +
+            "COALESCE(SUM(CASE WHEN type = 'IMPORT' THEN quantity ELSE 0 END), 0) - " +
+            "COALESCE(SUM(CASE WHEN type = 'EXPORT' THEN quantity ELSE 0 END), 0) " +
+            "FROM consumable_transactions WHERE material_id = :materialId", nativeQuery = true)
+    int getStockQuantity(@Param("materialId") Long materialId);
 }

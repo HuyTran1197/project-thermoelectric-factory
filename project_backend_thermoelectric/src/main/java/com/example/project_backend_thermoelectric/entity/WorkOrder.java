@@ -18,6 +18,8 @@ public class WorkOrder {
     private Long id;
 
     private String status;
+    @Column(name = "material_status")
+    private String materialStatus;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
