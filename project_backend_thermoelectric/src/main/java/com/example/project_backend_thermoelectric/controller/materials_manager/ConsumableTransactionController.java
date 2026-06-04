@@ -3,16 +3,13 @@ package com.example.project_backend_thermoelectric.controller.materials_manager;
 import com.example.project_backend_thermoelectric.dto.materials_manager.ConsumableInventoryDto;
 import com.example.project_backend_thermoelectric.dto.materials_manager.ConsumableTransactionDto;
 import com.example.project_backend_thermoelectric.entity.ConsumableTransaction;
-import com.example.project_backend_thermoelectric.enums.TransactionType;
 import com.example.project_backend_thermoelectric.service.materials_manager.IConsumableTransactionService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;

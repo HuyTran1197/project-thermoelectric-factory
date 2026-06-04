@@ -22,12 +22,11 @@ public class WorkOrderConsumable {
 
     private Integer quantity;
 
-    // FK tới work_order
+
     @ManyToOne
     @JoinColumn(name = "work_order_id", nullable = false)
     private WorkOrder workOrder;
 
-    // FK tới material
     @ManyToOne
     @JoinColumn(name = "material_id", nullable = false)
     private ConsumableMaterial material;
