@@ -1,7 +1,6 @@
 package com.example.project_backend_thermoelectric.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,14 +24,19 @@ public class User {
 
     private String username;
 
+    @JsonIgnore
     private String password;
 
     @OneToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
     private List<UserRole> roles = new ArrayList<>();
 
 }

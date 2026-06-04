@@ -99,13 +99,24 @@ public class SecurityConfig {
                         // ==========================
                         .requestMatchers(
                                 "/api/tools/**",
-                                "/api/tool-borrowings"
+                                "/api/tool-borrowings/**"
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO CCDC",
                                 "ROLE_ADMIN"
                         )
-
+                                // ==========================
+                                // ==========================
+                                // TRƯỞNG CA - TRƯỞNG KÍP
+                                // ==========================
+                                .requestMatchers(
+                                        "/api/repair-orders/**"
+                                )
+                                .hasAnyAuthority(
+                                        "ROLE_TRƯỞNG CA",
+                                        "ROLE_TRƯỞNG KÍP",
+                                        "ROLE_ADMIN"
+                                )
                         // ==========================
                         // CÒN LẠI PHẢI LOGIN
                         // ==========================
