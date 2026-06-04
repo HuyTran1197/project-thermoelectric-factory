@@ -18,6 +18,8 @@ public class WorkOrder {
     private Long id;
 
     private String status;
+    @Column(name = "material_status")
+    private String materialStatus;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -27,7 +29,7 @@ public class WorkOrder {
 
     @ManyToOne
     @JoinColumn(name = "request_id")
-    private Request request;
+    private RepairOrder request;
 
     @ManyToOne
     @JoinColumn(name = "created_by")

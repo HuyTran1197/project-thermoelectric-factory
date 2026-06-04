@@ -1,10 +1,8 @@
 package com.example.project_backend_thermoelectric.service.operations_manager.equipment;
 
+import com.example.project_backend_thermoelectric.dto.operations_manager.detail.*;
 import com.example.project_backend_thermoelectric.dto.operations_manager.request.EquipmentTypeRequestDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.response.EquipmentTypeDto;
-import com.example.project_backend_thermoelectric.dto.operations_manager.detail.EquipmentHeaderDto;
-import com.example.project_backend_thermoelectric.dto.operations_manager.detail.EquipmentParamDetailDto;
-import com.example.project_backend_thermoelectric.dto.operations_manager.detail.EquipmentTypeDetailResponse;
 import com.example.project_backend_thermoelectric.entity.Domain;
 import com.example.project_backend_thermoelectric.entity.EquipmentType;
 import com.example.project_backend_thermoelectric.exception.DuplicateResourceException;
@@ -17,9 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -86,12 +82,15 @@ public class EquipmentTypeService implements IEquipmentTypeService {
         List<EquipmentParamDetailDto> rows =
                 equipmentTypeRepo.getParameters(typeId, equipmentId);
 
-        Map<String, String> parameters = new LinkedHashMap<>();
+        List<EquipmentParamResponse> parameters = new ArrayList<>();
 
         for (EquipmentParamDetailDto row : rows) {
-            parameters.put(
-                    row.getParameter(),
-                    row.getValue()
+            parameters.add(
+                    new EquipmentParamResponse(
+                            row.getParameter(),
+                            row.getUnit(),
+                            row.getValue()
+                    )
             );
         }
 

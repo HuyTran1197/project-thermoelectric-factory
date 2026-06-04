@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
+import java.util.List;
 
 @Setter
 @Getter
@@ -16,5 +16,5 @@ public class EquipmentTypeDetailResponse {
     private String name;
     private String type;
     private String kks;
-    private Map<String,String> parameters;
+    private List<EquipmentParamResponse> parameters;
 }

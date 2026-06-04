@@ -13,6 +13,7 @@ import java.util.List;
 public class ConsumableMaterialService implements IConsumableMaterialService {
     @Autowired
     private IConsumableMaterialRepository consumableMaterialRepository;
+
     @Override
     public ConsumableMaterial findById(long id) {
         return consumableMaterialRepository.findById(id).orElse(null);
@@ -50,6 +51,7 @@ public class ConsumableMaterialService implements IConsumableMaterialService {
     public Page<ConsumableMaterial> findByNameOrCode(String code, String name, Pageable pageable) {
         return consumableMaterialRepository.searchConsumableMaterial(code, name, pageable);
     }
+
 
 
 }

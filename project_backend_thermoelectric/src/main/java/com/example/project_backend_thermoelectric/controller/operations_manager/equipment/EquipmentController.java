@@ -5,6 +5,7 @@ import com.example.project_backend_thermoelectric.dto.operations_manager.request
 import com.example.project_backend_thermoelectric.dto.operations_manager.response.EquipmentDto;
 import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.service.operations_manager.equipment.IEquipmentService;
+import com.example.project_backend_thermoelectric.service.operations_manager.equipment.IEquipmentTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class EquipmentController {
     @Autowired
     private IEquipmentService equipmentService;
+    @Autowired
+    private IEquipmentTypeService equipmentTypeService;
+
 
     @GetMapping
     public ResponseEntity<Page<EquipmentDto>> showList(@RequestParam(defaultValue = "0") int page,
@@ -41,9 +45,20 @@ public class EquipmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){
-        return new ResponseEntity<>(equipmentService.findById(id),HttpStatus.OK);
+    public ResponseEntity<?> getEquipmentById(@PathVariable Long id){
+        return ResponseEntity.ok(equipmentService.findById(id));
     }
+
+    @GetMapping("/{typeId}/equipment-types/{equipmentId}/detail")
+    public ResponseEntity<?> detail(
+            @PathVariable Long typeId,
+            @PathVariable Long equipmentId
+    ){
+        return ResponseEntity.ok(
+                equipmentTypeService.detail(typeId, equipmentId)
+        );
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> editEquipment(@PathVariable Long id,
                                            @Valid @RequestBody EquipmentRequestDto dto) {
@@ -53,4 +68,9 @@ public class EquipmentController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEquipment(@PathVariable Long id){
+        equipmentService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

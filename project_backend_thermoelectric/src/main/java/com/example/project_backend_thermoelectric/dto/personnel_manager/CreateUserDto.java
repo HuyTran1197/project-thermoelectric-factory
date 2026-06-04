@@ -10,5 +10,6 @@ import lombok.*;
 public class CreateUserDto {
     private String username;
     private String password;
+    private String confirmPassword;
     private Long employeeId;
 }

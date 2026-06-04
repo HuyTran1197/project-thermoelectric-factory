@@ -5,6 +5,7 @@ import com.example.project_backend_thermoelectric.service.ToolBorrowingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,16 +16,70 @@ public class ToolBorrowingController {
 
     @Autowired
     private ToolBorrowingService borrowingService;
-
     @GetMapping
-    public List<ToolBorrowing> getAllBorrowings() {
-        return borrowingService.getAllBorrowings();
+    public ResponseEntity<Page<ToolBorrowing>>
+    getAllBorrowings(
+
+            @RequestParam(required = false)
+            String toolCode,
+
+            @RequestParam(required = false)
+            String employeeSearch,
+
+            @RequestParam(required = false)
+            String status,
+
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @RequestParam(defaultValue = "5")
+            int size
+    ) {
+
+        return ResponseEntity.ok(
+
+                borrowingService.searchBorrowings(
+                        toolCode,
+                        employeeSearch,
+                        status,
+                        page,
+                        size
+                )
+        );
+    }
+
+
+    @PostMapping("/batch")
+    public ResponseEntity<?> borrowToolsBatch(@RequestBody List<ToolBorrowing> borrowings) {
+        try {
+            return ResponseEntity.ok(borrowingService.borrowToolsBatch(borrowings));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/confirm-returns")
+    public ResponseEntity<?> confirmReturns(@RequestBody List<Long> borrowingIds) {
+        try {
+            return ResponseEntity.ok(borrowingService.confirmReturns(borrowingIds));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/borrow")
     public ResponseEntity<?> borrowTool(@RequestBody ToolBorrowing borrowing) {
         try {
             return ResponseEntity.ok(borrowingService.borrowTool(borrowing));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/confirm-borrow/{id}")
+    public ResponseEntity<?> confirmBorrowing(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(borrowingService.confirmBorrowing(id));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
