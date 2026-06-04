@@ -39,7 +39,7 @@ public class EmployeeController {
     public Page<Employee> searchEmployees(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         return employeeService.searchEmployees(keyword, page, size);
     }
 

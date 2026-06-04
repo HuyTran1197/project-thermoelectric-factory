@@ -2,6 +2,7 @@ package com.example.project_backend_thermoelectric.service.personnel_manager;
 
 import com.example.project_backend_thermoelectric.dto.personnel_manager.CreateUserDto;
 import com.example.project_backend_thermoelectric.dto.personnel_manager.RoleDto;
+import com.example.project_backend_thermoelectric.dto.personnel_manager.UpdateUserDto;
 import com.example.project_backend_thermoelectric.dto.personnel_manager.UserDto;
 import com.example.project_backend_thermoelectric.entity.Employee;
 import com.example.project_backend_thermoelectric.entity.Role;
@@ -50,6 +51,23 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
+    public UserDto updateUser(Long id, UpdateUserDto dto) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        if (dto.getEmployeeId() != null) {
+            Employee emp = employeeRepo.findById(dto.getEmployeeId())
+                    .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
+            user.setEmployee(emp);
+        }
+        user = userRepo.save(user);
+        return mapToDTO(user);
+    }
+
+
+    @Override
     public UserDto getUserDtoById(Long id) {
         User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
         return mapToDTO(user);
@@ -77,6 +95,18 @@ public class UserService implements IUserService {
     public void removeRoleFromUser(Long userId, Long roleId) {
         if (!userRoleRepo.existsByUserIdAndRoleId(userId, roleId)) return;
         userRoleRepo.deleteByUserIdAndRoleId(userId, roleId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserById(Long id) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        for(UserRole ur : userRoleRepo.findByUserId(user.getId())) {
+            userRoleRepo.delete(ur);
+        }
+        userRepo.delete(user);
     }
 
 

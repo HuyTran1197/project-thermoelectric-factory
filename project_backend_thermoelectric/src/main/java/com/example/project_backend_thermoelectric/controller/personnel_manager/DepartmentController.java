@@ -20,7 +20,7 @@ public class DepartmentController {
     public Page<Department> searchDepartments(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         return departmentService.searchDepartments(keyword, page, size);
     }
 
