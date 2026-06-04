@@ -4,8 +4,9 @@ import com.example.project_backend_thermoelectric.dto.materials_manager.Consumab
 import com.example.project_backend_thermoelectric.dto.materials_manager.ConsumableTransactionDto;
 import com.example.project_backend_thermoelectric.entity.ConsumableTransaction;
 import com.example.project_backend_thermoelectric.entity.User;
-import com.example.project_backend_thermoelectric.enums.TransactionType;
+import com.example.project_backend_thermoelectric.repository.materials_manager.IConsumableMaterialRepository;
 import com.example.project_backend_thermoelectric.repository.materials_manager.IConsumableTransactionRepository;
+import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderConsumableRepository;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,11 @@ import java.time.LocalDateTime;
 public class ConsumableTransactionService implements IConsumableTransactionService {
     @Autowired
     private IConsumableTransactionRepository  consumableTransactionRepository;
+    @Autowired
+    private IWorkOrderConsumableRepository workOrderConsumableRepository;
+
+    @Autowired
+    private IConsumableMaterialRepository materialRepository;
     @Autowired
     private IUserRepo                     userRepo;
 
@@ -51,4 +57,5 @@ public class ConsumableTransactionService implements IConsumableTransactionServi
     public ConsumableTransaction exportConsumable(ConsumableTransaction consumableTransaction) {
         return null;
     }
+
 }

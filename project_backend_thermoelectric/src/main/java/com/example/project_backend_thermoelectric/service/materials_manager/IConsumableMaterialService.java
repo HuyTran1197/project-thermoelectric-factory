@@ -13,4 +13,5 @@ public interface IConsumableMaterialService {
     boolean delete(long id);
     ConsumableMaterial update(ConsumableMaterial consumableMaterial);
     Page<ConsumableMaterial> findByNameOrCode(String code, String name, Pageable pageable);
+
 }
