@@ -161,11 +161,6 @@ public class MaterialExportService implements IMaterialExportService {
 
             replacementTxRepository.save(tx);
         }
-
-        // =================================================================
-        // ĐOẠN CODE CÒN THIẾU CỦA THỦ KHO: CẬP NHẬT TRẠNG THÁI PHIẾU MẸ
-        // =================================================================
-        // Đánh dấu chính thức xuất kho hoàn tất để khóa vĩnh viễn quy trình cấp phát
         workOrder.setMaterialStatus("RELEASED");
         workOrderRepository.save(workOrder);
     }
