@@ -4,12 +4,14 @@ import com.example.project_backend_thermoelectric.dto.repair_order.CreateRepairO
 import com.example.project_backend_thermoelectric.dto.repair_order.UpdateRepairOrderDto;
 import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.entity.RepairOrder;
+import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.repair_order.RepairOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 
@@ -43,7 +45,7 @@ public class RepairOrderService implements IRepairOrderService {
         order.setTitle(dto.getTitle());
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
-        order.setStatus("PENDING");
+        order.setStatus(RepairOrderStatus.PENDING);
         order.setCreatedAt(LocalDateTime.now());
 
         return repairOrderRepository.save(order);
