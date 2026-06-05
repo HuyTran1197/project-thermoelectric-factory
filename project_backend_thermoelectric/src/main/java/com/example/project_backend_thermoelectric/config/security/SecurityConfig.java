@@ -105,17 +105,55 @@ public class SecurityConfig {
                                 "ROLE_THỦ KHO CCDC",
                                 "ROLE_ADMIN"
                         )
-                                // ==========================
-                                // ==========================
-                                // TRƯỞNG CA - TRƯỞNG KÍP
-                                // ==========================
-                                .requestMatchers(
-                                        "/api/repair-orders/**"
-                                )
-                                .hasAnyAuthority(
-                                        "ROLE_TRƯỞNG CA",
-                                        "ROLE_TRƯỞNG KÍP",
-                                        "ROLE_ADMIN"
+
+                        // ==========================
+                        // TRƯỞNG CA / TRƯỞNG KÍP
+                        // ==========================
+                        .requestMatchers(
+                                "/api/repair-orders/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_TRƯỞNG CA",
+                                "ROLE_TRƯỞNG KÍP",
+                                "ROLE_ADMIN"
+                        )
+
+                        // ==========================
+                        // QUẢN ĐỐC SỬA CHỮA / TỔ TRƯỞNG
+                        // ==========================
+                        .requestMatchers(
+                                "/api/material-export/supply-slip"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
+                                "ROLE_ADMIN"
+                        )
+
+                        // ==========================
+                        // THỦ KHO VẬT TƯ
+                        // ==========================
+                        .requestMatchers(
+                                "/api/material-export/approve/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_THỦ KHO VẬT TƯ",
+                                "ROLE_ADMIN"
+                        )
+
+                        // ==========================
+                        // XEM THÔNG TIN PHIẾU CẤP PHÁT
+                        // ==========================
+                        .requestMatchers(
+                                "/api/material-export/work-order/**",
+                                "/api/material-export/work-order-consumables/**",
+                                "/api/material-export/work-order-replacements/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
+                                "ROLE_THỦ KHO VẬT TƯ",
+                                "ROLE_ADMIN"
                                 )
                         // ==========================
                         // CÒN LẠI PHẢI LOGIN
