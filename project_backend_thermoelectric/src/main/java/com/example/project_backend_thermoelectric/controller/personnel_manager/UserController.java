@@ -38,6 +38,18 @@ public class UserController {
         return userService.createUser(dto);
     }
 
+    @PutMapping("/{id}")
+    public UserDto updateUser(@PathVariable Long id, @RequestBody UpdateUserDto dto) {
+        return userService.updateUser(id, dto);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        userService.deleteUserById(id);
+        return "Xóa user thành công";
+    }
+
     @PostMapping("/{userId}/roles/{roleId}")
     public String assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
         userService.addRoleToUser(userId, roleId);

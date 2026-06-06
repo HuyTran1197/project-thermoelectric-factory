@@ -33,7 +33,7 @@ public class PositionController {
     public Page<Position> searchPositions(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         return positionService.searchPositions(keyword, page, size);
     }
 

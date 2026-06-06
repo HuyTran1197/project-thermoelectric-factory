@@ -7,8 +7,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserDto {
-    private String username;
-    private String password;
+public class EmployeeWorkPositionDto {
     private Long employeeId;
+    private Long workPositionId;
+    private String workPositionName;
+
 }
