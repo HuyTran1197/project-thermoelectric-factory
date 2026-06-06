@@ -70,13 +70,29 @@ public class RepairOrderService implements IRepairOrderService {
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
         order.setStatus(dto.getStatus());
-
+        if (order.getStatus() != RepairOrderStatus.PENDING) {
+            throw new RuntimeException(
+                    "Yêu cầu đã được xử lý, không thể chỉnh sửa"
+            );
+        }
         return repairOrderRepository.save(order);
     }
 
     @Override
     public void delete(Long id) {
 
-        repairOrderRepository.deleteById(id);
+        RepairOrder order =
+                repairOrderRepository.findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException("Không tìm thấy yêu cầu")
+                        );
+
+        if (order.getStatus() != RepairOrderStatus.PENDING) {
+            throw new RuntimeException(
+                    "Chỉ được xóa yêu cầu ở trạng thái PENDING"
+            );
+        }
+
+        repairOrderRepository.delete(order);
     }
 }
