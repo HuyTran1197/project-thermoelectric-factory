@@ -11,6 +11,6 @@ public enum RepairOrderStatus {
     DANG_SUA_CHUA("Đang sửa chữa"),
     DA_HOAN_THANH("Đã hoàn thành"),
     KHONG_DUYET("Không duyệt"),
-    DA_HUY("DA_HUY");
+    DA_HUY("Đã");
     private final  String displayName;
 }

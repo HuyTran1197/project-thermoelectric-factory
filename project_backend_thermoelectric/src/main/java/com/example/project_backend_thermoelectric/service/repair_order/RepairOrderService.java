@@ -45,7 +45,7 @@ public class RepairOrderService implements IRepairOrderService {
         order.setTitle(dto.getTitle());
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
-        order.setStatus(RepairOrderStatus.PENDING);
+        order.setStatus(RepairOrderStatus .CHO_DUYET);
         order.setCreatedAt(LocalDateTime.now());
 
         return repairOrderRepository.save(order);
@@ -70,7 +70,7 @@ public class RepairOrderService implements IRepairOrderService {
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
         order.setStatus(dto.getStatus());
-        if (order.getStatus() != RepairOrderStatus.PENDING) {
+        if (order.getStatus() != RepairOrderStatus.CHO_DUYET) {
             throw new RuntimeException(
                     "Yêu cầu đã được xử lý, không thể chỉnh sửa"
             );
@@ -87,7 +87,7 @@ public class RepairOrderService implements IRepairOrderService {
                                 () -> new RuntimeException("Không tìm thấy yêu cầu")
                         );
 
-        if (order.getStatus() != RepairOrderStatus.PENDING) {
+        if (order.getStatus() != RepairOrderStatus.CHO_DUYET) {
             throw new RuntimeException(
                     "Chỉ được xóa yêu cầu ở trạng thái PENDING"
             );
