@@ -49,6 +49,11 @@ public class RepairOrderController {
             @RequestBody UpdateRepairOrderDto dto
     ) {
 
+        System.out.println(dto.getTitle());
+        System.out.println(dto.getDescription());
+        System.out.println(dto.getStatus());
+        System.out.println(dto.getEquipmentId());
+
         return ResponseEntity.ok(
                 repairOrderService.update(id, dto)
         );
@@ -63,4 +68,5 @@ public class RepairOrderController {
 
         return ResponseEntity.noContent().build();
     }
+
 }

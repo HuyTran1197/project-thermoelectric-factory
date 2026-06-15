@@ -17,7 +17,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        var authorities = user.getRoles()
+        return user.getRoles()
                 .stream()
                 .map(UserRole::getRole)
                 .map(role ->
@@ -26,10 +26,6 @@ public class CustomUserDetails implements UserDetails {
                         )
                 )
                 .toList();
-
-        System.out.println(authorities);
-
-        return authorities;
     }
 
     @Override

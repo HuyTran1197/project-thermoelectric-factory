@@ -77,6 +77,8 @@ public class SecurityConfig {
                         )
                         .hasAnyAuthority(
                                 "ROLE_QUẢN ĐỐC VẬN HÀNH",
+                                "ROLE_TRƯỞNG CA",
+                                "ROLE_TRƯỞNG KÍP",
                                 "ROLE_ADMIN"
                         )
 
@@ -155,7 +157,20 @@ public class SecurityConfig {
                                 "ROLE_TỔ TRƯỞNG",
                                 "ROLE_THỦ KHO VẬT TƯ",
                                 "ROLE_ADMIN"
-                                )
+                        )
+
+                        // ==========================
+                        // BIÊN BẢN KỸ THUẬT
+                        // ==========================
+                        .requestMatchers(
+                                "/api/technical-reports/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
+                                "ROLE_ADMIN"
+                        )
+
                         // ==========================
                         // CÒN LẠI PHẢI LOGIN
                         // ==========================

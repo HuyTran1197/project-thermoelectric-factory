@@ -4,12 +4,14 @@ import com.example.project_backend_thermoelectric.dto.repair_order.CreateRepairO
 import com.example.project_backend_thermoelectric.dto.repair_order.UpdateRepairOrderDto;
 import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.entity.RepairOrder;
+import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.repair_order.RepairOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 
@@ -43,7 +45,7 @@ public class RepairOrderService implements IRepairOrderService {
         order.setTitle(dto.getTitle());
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
-        order.setStatus("PENDING");
+        order.setStatus(RepairOrderStatus .CHO_DUYET);
         order.setCreatedAt(LocalDateTime.now());
 
         return repairOrderRepository.save(order);
@@ -68,13 +70,29 @@ public class RepairOrderService implements IRepairOrderService {
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
         order.setStatus(dto.getStatus());
-
+        if (order.getStatus() != RepairOrderStatus.CHO_DUYET) {
+            throw new RuntimeException(
+                    "Yêu cầu đã được xử lý, không thể chỉnh sửa"
+            );
+        }
         return repairOrderRepository.save(order);
     }
 
     @Override
     public void delete(Long id) {
 
-        repairOrderRepository.deleteById(id);
+        RepairOrder order =
+                repairOrderRepository.findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException("Không tìm thấy yêu cầu")
+                        );
+
+        if (order.getStatus() != RepairOrderStatus.CHO_DUYET) {
+            throw new RuntimeException(
+                    "Chỉ được xóa yêu cầu ở trạng thái PENDING"
+            );
+        }
+
+        repairOrderRepository.delete(order);
     }
 }
