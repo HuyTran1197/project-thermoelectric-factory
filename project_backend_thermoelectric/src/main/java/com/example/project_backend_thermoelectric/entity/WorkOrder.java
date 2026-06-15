@@ -1,5 +1,6 @@
 package com.example.project_backend_thermoelectric.entity;
 
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,8 +19,9 @@ public class WorkOrder {
     private Long id;
 
     private String status;
+    @Enumerated(EnumType.STRING)
     @Column(name = "material_status")
-    private String materialStatus;
+    private MaterialStatus materialStatus;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;

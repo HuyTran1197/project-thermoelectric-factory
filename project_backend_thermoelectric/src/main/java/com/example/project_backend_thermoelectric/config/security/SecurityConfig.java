@@ -91,6 +91,7 @@ public class SecurityConfig {
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
                                 "ROLE_ADMIN"
                         )
 

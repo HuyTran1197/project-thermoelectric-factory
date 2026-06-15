@@ -15,14 +15,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkOrderConsumable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Integer quantity;
-
-
     @ManyToOne
     @JoinColumn(name = "work_order_id", nullable = false)
     private WorkOrder workOrder;

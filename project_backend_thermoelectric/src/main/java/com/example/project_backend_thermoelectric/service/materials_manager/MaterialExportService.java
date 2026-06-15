@@ -2,6 +2,7 @@ package com.example.project_backend_thermoelectric.service.materials_manager;
 
 import com.example.project_backend_thermoelectric.dto.materials_manager.FullMaterialExportDto;
 import com.example.project_backend_thermoelectric.entity.*;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import com.example.project_backend_thermoelectric.enums.TransactionType;
 import com.example.project_backend_thermoelectric.repository.materials_manager.*;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
@@ -46,16 +47,21 @@ public class MaterialExportService implements IMaterialExportService {
     @Transactional
     public void exportMaterialToWorkOrder(FullMaterialExportDto exportDTO) {
 
-        // 1. Tìm phiếu sửa chữa (WorkOrder) cha xem có tồn tại không
         WorkOrder workOrder = workOrderRepository.findById(exportDTO.getWorkOrderId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + exportDTO.getWorkOrderId()));
 
-        // 🔥 CHẶN KHÔNG CHO QUẢN ĐỐC CẤP TRÙNG NẾU PHIẾU ĐÃ GỬI ĐI RỒI
-        if (workOrder.getMaterialStatus() != null && !"NOT_REQUESTED".equals(workOrder.getMaterialStatus())) {
-            throw new RuntimeException("❌ Phiếu sửa chữa này đã được gửi yêu cầu cấp vật tư trước đó!");
+        MaterialStatus currentStatus = workOrder.getMaterialStatus();
+        if (currentStatus == MaterialStatus.DA_CAP_PHAT) {
+            throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể chỉnh sửa!");
         }
 
-        // 2. Xử lý lưu danh sách VẬT TƯ TIÊU HAO được yêu cầu
+        if (currentStatus == MaterialStatus.CHO_CAP_PHAT) {
+            workOrderConsumableRepository.deleteByWorkOrder(workOrder);
+            workOrderConsumableRepository.flush();
+
+            workOrderReplacementRepository.deleteByWorkOrder(workOrder);
+            workOrderReplacementRepository.flush();
+        }
         if (exportDTO.getConsumables() != null && !exportDTO.getConsumables().isEmpty()) {
             for (FullMaterialExportDto.MaterialItem item : exportDTO.getConsumables()) {
                 ConsumableMaterial material = consumableMaterialRepository.findById(item.getMaterialId())
@@ -70,7 +76,6 @@ public class MaterialExportService implements IMaterialExportService {
             }
         }
 
-        // 3. Xử lý lưu danh sách PHỤ TÙNG THAY THẾ được yêu cầu
         if (exportDTO.getReplacements() != null && !exportDTO.getReplacements().isEmpty()) {
             for (FullMaterialExportDto.MaterialItem item : exportDTO.getReplacements()) {
                 ReplacementMaterial material = replacementMaterialRepository.findById(item.getMaterialId())
@@ -85,12 +90,8 @@ public class MaterialExportService implements IMaterialExportService {
             }
         }
 
-        // =================================================================
-        // ĐOẠN CODE CÒN THIẾU CỦA QUẢN ĐỐC: CẬP NHẬT TRẠNG THÁI PHIẾU MẸ
-        // =================================================================
-        // Chuyển trạng thái sang "Chờ thủ kho duyệt" để kích hoạt isReadOnly ở Frontend
-        workOrder.setMaterialStatus("PENDING_RELEASE");
-        workOrderRepository.save(workOrder); // Ghi nhận thay đổi xuống DB
+        workOrder.setMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        workOrderRepository.save(workOrder);
     }
 
     @Override
@@ -105,14 +106,11 @@ public class MaterialExportService implements IMaterialExportService {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
-        // 🔥 CHẶN KHÔNG CHO THỦ KHO XUẤT PHIẾU NÀY LẦN NỮA NẾU ĐÃ RELEASED
-        if ("RELEASED".equals(workOrder.getMaterialStatus())) {
+        if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
             throw new RuntimeException("❌ Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể xuất lại!");
         }
 
-        // =================================================================
-        // PHẦN 1: KIỂM TRA & XUẤT KHO VẬT TƯ TIÊU HAO
-        // =================================================================
+
         List<WorkOrderConsumable> requestedConsumables = workOrderConsumableRepository.findByWorkOrder(workOrder);
 
         for (WorkOrderConsumable req : requestedConsumables) {
@@ -136,9 +134,6 @@ public class MaterialExportService implements IMaterialExportService {
             consumableTxRepository.save(tx);
         }
 
-        // =================================================================
-        // PHẦN 2: KIỂM TRA & XUẤT KHO PHỤ TÙNG THAY THẾ
-        // =================================================================
         List<WorkOrderReplacement> requestedReplacements = workOrderReplacementRepository.findByWorkOrder(workOrder);
 
         for (WorkOrderReplacement req : requestedReplacements) {
@@ -161,7 +156,80 @@ public class MaterialExportService implements IMaterialExportService {
 
             replacementTxRepository.save(tx);
         }
-        workOrder.setMaterialStatus("RELEASED");
+        workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
+        workOrderRepository.save(workOrder);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void approveSpecificMaterials(Long workOrderId, Long staffId, List<Long> approvedConsumableIds, List<Long> approvedReplacementIds) {
+
+        User staff = userRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin Thủ kho ID: " + staffId));
+
+        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
+
+        if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
+            throw new RuntimeException(" Vật tư của phiếu sửa chữa này đã được xuất kho thực tế!");
+        }
+        List<WorkOrderConsumable> requestedConsumables = workOrderConsumableRepository.findByWorkOrder(workOrder);
+        for (WorkOrderConsumable req : requestedConsumables) {
+            Long materialId = req.getMaterial().getId();
+
+            if (approvedConsumableIds != null && approvedConsumableIds.contains(materialId)) {
+                ConsumableMaterial material = req.getMaterial();
+                int qtyToExport = req.getQuantity();
+
+                int currentStock = consumableTxRepository.getStockQuantity(material.getId());
+
+                if (currentStock < qtyToExport) {
+                    throw new RuntimeException(" Kho không đủ số lượng cho vật tư tiêu hao: " + material.getName()
+                            + " (Hiện tồn: " + currentStock + ", Yêu cầu: " + qtyToExport + ")");
+                }
+                //
+
+                // Ghi nhận Transaction Xuất kho thực tế
+                ConsumableTransaction tx = new ConsumableTransaction();
+                tx.setMaterial(material);
+                tx.setType(TransactionType.EXPORT);
+                tx.setQuantity(qtyToExport);
+                tx.setCreatedBy(staff);
+                tx.setCreatedAt(LocalDateTime.now());
+                consumableTxRepository.save(tx);
+            }
+        }
+
+        // 4. Duyệt danh sách Phụ tùng thay thế (Chỉ xử lý những ID được Thủ kho tick)
+        List<WorkOrderReplacement> requestedReplacements = workOrderReplacementRepository.findByWorkOrder(workOrder);
+        for (WorkOrderReplacement req : requestedReplacements) {
+            Long materialId = req.getMaterial().getId();
+
+            // Nếu nằm trong danh sách được tick chọn
+            if (approvedReplacementIds != null && approvedReplacementIds.contains(materialId)) {
+                ReplacementMaterial material = req.getMaterial();
+                int qtyToExport = req.getQuantity();
+
+                int currentStock = replacementTxRepository.getStockQuantity(material.getId());
+
+                if (currentStock < qtyToExport) {
+                    throw new RuntimeException("❌ Kho không đủ số lượng cho phụ tùng thay thế: " + material.getName()
+                            + " (Hiện tồn: " + currentStock + ", Yêu cầu: " + qtyToExport + ")");
+                }
+
+                // Ghi nhận Transaction Xuất kho thực tế
+                ReplacementTransaction tx = new ReplacementTransaction();
+                tx.setMaterial(material);
+                tx.setType(TransactionType.EXPORT);
+                tx.setQuantity(qtyToExport);
+                tx.setCreatedBy(staff);
+                tx.setCreatedAt(LocalDateTime.now());
+                replacementTxRepository.save(tx);
+            }
+        }
+
+        // 5. Cập nhật trạng thái tổng thể của phiếu sửa chữa sang ĐÃ CẤP PHAT
+        workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
         workOrderRepository.save(workOrder);
     }
 }

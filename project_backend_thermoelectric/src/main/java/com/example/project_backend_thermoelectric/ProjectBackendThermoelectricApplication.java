@@ -8,4 +8,4 @@ public class ProjectBackendThermoelectricApplication {
     public static void main(String[] args) {
         SpringApplication.run(ProjectBackendThermoelectricApplication.class, args);
     }
-}
+}   

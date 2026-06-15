@@ -1,6 +1,7 @@
 package com.example.project_backend_thermoelectric.controller.materials_manager;
 
 import com.example.project_backend_thermoelectric.dto.materials_manager.FullMaterialExportDto;
+import com.example.project_backend_thermoelectric.dto.materials_manager.StorekeeperApproveDto;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.entity.WorkOrderConsumable;
 import com.example.project_backend_thermoelectric.entity.WorkOrderReplacement;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +39,6 @@ public class MaterialExportController {
     @PostMapping("/supply-slip")
     public ResponseEntity<?> exportMaterials(@RequestBody FullMaterialExportDto exportDTO) {
         try {
-            // Mọi logic lưu vật tư VÀ đổi trạng thái thành "PENDING_RELEASE" đã được gom vào đây
             materialExportService.exportMaterialToWorkOrder(exportDTO);
 
             return ResponseEntity.ok(Map.of(
@@ -52,14 +53,15 @@ public class MaterialExportController {
         }
     }
 
-    // 2. API THỦ KHO: Duyệt xuất kho thực tế
     @PostMapping("/approve/{workOrderId}")
-    public ResponseEntity<?> approveAndReleaseMaterials(@PathVariable Long workOrderId, @RequestParam Long staffId) {
+    public ResponseEntity<?> approveAndReleaseMaterials(
+            @PathVariable Long workOrderId,
+            @RequestParam Long staffId,
+                @RequestBody StorekeeperApproveDto approveDTO
+        ) {
         try {
-            // Mọi logic trừ kho VÀ đổi trạng thái thành "RELEASED" đã được gom vào đây
-            materialExportService.approveAndReleaseMaterials(workOrderId, staffId);
-
-            return ResponseEntity.ok(Map.of("success", true, "message", "Duyệt xuất kho thành công!"));
+            materialExportService.approveSpecificMaterials(workOrderId, staffId, approveDTO.getConsumableIds(), approveDTO.getReplacementIds());
+            return ResponseEntity.ok(Map.of("success", true, "message", "Phê duyệt và xuất kho vật tư thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
