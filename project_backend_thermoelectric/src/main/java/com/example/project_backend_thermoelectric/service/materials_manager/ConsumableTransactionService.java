@@ -40,9 +40,7 @@ public class ConsumableTransactionService implements IConsumableTransactionServi
     }
 
     @Override
-    public ConsumableTransaction importConsumable(
-            ConsumableTransaction transaction
-    ) {
+    public ConsumableTransaction importConsumable(ConsumableTransaction transaction) {
 
         transaction.setCreatedAt(LocalDateTime.now());
 

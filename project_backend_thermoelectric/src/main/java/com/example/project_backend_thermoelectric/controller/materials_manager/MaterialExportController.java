@@ -5,6 +5,7 @@ import com.example.project_backend_thermoelectric.dto.materials_manager.Storekee
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.entity.WorkOrderConsumable;
 import com.example.project_backend_thermoelectric.entity.WorkOrderReplacement;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderConsumableRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderReplacementRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
@@ -67,7 +68,6 @@ public class MaterialExportController {
         }
     }
 
-    // 3. API BỔ SUNG: Lấy thông tin trạng thái của WorkOrder (Frontend đang gọi hàm này để check lock giao diện)
     @GetMapping("/work-order/{id}")
     public ResponseEntity<?> getWorkOrderDetails(@PathVariable Long id) {
         try {
@@ -104,5 +104,19 @@ public class MaterialExportController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
+    }
+    // 1. API lấy toàn bộ danh sách đang CHỜ CẤP PHÁT
+    // Trong Controller xử lý phần vật tư/phiếu sửa chữa của bạn
+    @GetMapping("/pending-list")
+    public ResponseEntity<List<WorkOrder>> getPendingWorkOrders() {
+        // Tìm các Phiếu sửa chữa có trạng thái vật tư là CHO_CAP_PHAT
+        List<WorkOrder> pendingOrders = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        return ResponseEntity.ok(pendingOrders);
+    }
+
+    @GetMapping("/pending-count")
+    public ResponseEntity<Long> countPendingWorkOrders() {
+        long count = workOrderRepository.countByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        return ResponseEntity.ok(count);
     }
 }

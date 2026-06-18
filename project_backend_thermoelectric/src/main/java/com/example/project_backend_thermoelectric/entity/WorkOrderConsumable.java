@@ -26,4 +26,6 @@ public class WorkOrderConsumable {
     @ManyToOne
     @JoinColumn(name = "material_id", nullable = false)
     private ConsumableMaterial material;
+    @Column(name = "released", nullable = false)
+    private boolean released = false;
 }

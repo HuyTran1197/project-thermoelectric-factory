@@ -90,6 +90,7 @@ public class SecurityConfig {
                                 "/api/consumable-transactions/**",
                                 "/api/replacement-materials/**",
                                 "/api/replacement-transactions/**"
+
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",
@@ -137,7 +138,9 @@ public class SecurityConfig {
                         // THỦ KHO VẬT TƯ
                         // ==========================
                         .requestMatchers(
-                                "/api/material-export/approve/**"
+                                "/api/material-export/approve/**",
+                                "/api/material-export/pending-list",
+                                "/api/material-export/pending-count"
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",
