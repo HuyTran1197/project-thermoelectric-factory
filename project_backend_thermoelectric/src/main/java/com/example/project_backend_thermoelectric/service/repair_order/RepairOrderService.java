@@ -4,12 +4,15 @@ import com.example.project_backend_thermoelectric.dto.repair_order.CreateRepairO
 import com.example.project_backend_thermoelectric.dto.repair_order.UpdateRepairOrderDto;
 import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.entity.RepairOrder;
+import com.example.project_backend_thermoelectric.entity.User;
 import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
+import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.repair_order.RepairOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -21,13 +24,15 @@ public class RepairOrderService implements IRepairOrderService {
 
     private final RepairOrderRepository repairOrderRepository;
     private final IEquipmentRepo equipmentRepository;
+    private final IUserRepo userRepo;
+
 
     @Override
     public Page<RepairOrder> getAll(String keyword, int page) {
 
         return repairOrderRepository.search(
                 keyword,
-                PageRequest.of(page, 10)
+                PageRequest.of(page, 3)
         );
     }
 
@@ -40,11 +45,24 @@ public class RepairOrderService implements IRepairOrderService {
                                 () -> new RuntimeException("Không tìm thấy thiết bị")
                         );
 
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        User user =
+                userRepo.findByUsername(username)
+                        .orElseThrow(
+                                () -> new RuntimeException("Không tìm thấy user")
+                        );
+
         RepairOrder order = new RepairOrder();
 
         order.setTitle(dto.getTitle());
         order.setDescription(dto.getDescription());
         order.setEquipment(equipment);
+        order.setCreatedBy(user);
         order.setStatus(RepairOrderStatus .CHO_DUYET);
         order.setCreatedAt(LocalDateTime.now());
 
