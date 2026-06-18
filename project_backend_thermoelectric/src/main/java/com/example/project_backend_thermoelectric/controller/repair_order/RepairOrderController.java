@@ -32,15 +32,13 @@ public class RepairOrderController {
 
     @PostMapping
     public ResponseEntity<?> create(
-            @RequestBody
-            CreateRepairOrderDto dto
+            @RequestBody CreateRepairOrderDto dto
     ) {
 
-        return ResponseEntity.status(
-                HttpStatus.CREATED
-        ).body(
-                repairOrderService.create(dto)
-        );
+        repairOrderService.create(dto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Tạo thành công");
     }
 
     @PutMapping("/{id}")
