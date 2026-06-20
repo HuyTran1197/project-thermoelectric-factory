@@ -1,5 +1,6 @@
 package com.example.project_backend_thermoelectric.entity;
 
+import com.example.project_backend_thermoelectric.enums.WorkOrderRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,8 @@ public class WorkOrderAssignment {
     private Long id;
 
     @Column(name = "role_in_work")
-    private String roleInWork;
+    @Enumerated(EnumType.STRING)
+    private WorkOrderRole roleInWork;
 
     @ManyToOne
     @JoinColumn(name = "work_order_id", nullable = false)

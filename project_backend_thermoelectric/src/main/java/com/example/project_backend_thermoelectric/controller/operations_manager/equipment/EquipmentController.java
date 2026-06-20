@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/equipments")
@@ -24,6 +26,10 @@ public class EquipmentController {
     @Autowired
     private IEquipmentTypeService equipmentTypeService;
 
+    @GetMapping("/list")
+    public ResponseEntity<List<Equipment>> getList(){
+        return ResponseEntity.ok(equipmentService.getList());
+    }
 
     @GetMapping
     public ResponseEntity<Page<EquipmentDto>> showList(@RequestParam(defaultValue = "0") int page,

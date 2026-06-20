@@ -1,6 +1,8 @@
 package com.example.project_backend_thermoelectric.entity;
 
+import com.example.project_backend_thermoelectric.enums.WorkOrderStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +19,16 @@ public class WorkOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String status;
+    @Column(
+            unique = true,
+            nullable = false
+    )
+    @NotBlank(message = "Không được bỏ trống")
+    private String code;
+
+    @Enumerated(EnumType.STRING)
+    private WorkOrderStatus status;
+
     @Column(name = "material_status")
     private String materialStatus;
 
@@ -28,7 +39,7 @@ public class WorkOrder {
     private LocalDateTime endDate;
 
     @ManyToOne
-    @JoinColumn(name = "request_id")
+    @JoinColumn(name = "request_id",unique = true)
     private RepairOrder request;
 
     @ManyToOne

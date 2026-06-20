@@ -120,6 +120,19 @@ public class SecurityConfig {
 
                         // ==========================
                         // QUẢN ĐỐC SỬA CHỮA / TỔ TRƯỞNG
+                        // CẤP PHIẾU CÔNG TÁC
+                        // ==========================
+                        .requestMatchers(
+                                "/api/work-orders/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
+                                "ROLE_ADMIN"
+                        )
+
+                        // ==========================
+                        // QUẢN ĐỐC SỬA CHỮA / TỔ TRƯỞNG
                         // ==========================
                         .requestMatchers(
                                 "/api/material-export/supply-slip"

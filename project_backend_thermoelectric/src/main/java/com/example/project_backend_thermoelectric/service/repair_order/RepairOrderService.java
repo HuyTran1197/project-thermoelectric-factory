@@ -5,19 +5,21 @@ import com.example.project_backend_thermoelectric.dto.repair_order.UpdateRepairO
 import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.entity.RepairOrder;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
-import com.example.project_backend_thermoelectric.repository.repair_order.RepairOrderRepository;
+import com.example.project_backend_thermoelectric.repository.repair_order.IRepairOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class RepairOrderService implements IRepairOrderService {
 
-    private final RepairOrderRepository repairOrderRepository;
+    private final IRepairOrderRepository repairOrderRepository;
     private final IEquipmentRepo equipmentRepository;
 
     @Override
