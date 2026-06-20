@@ -18,7 +18,7 @@ public interface IRepairOrderRepository
             :keyword = ''
             or lower(r.title) like lower(concat('%',:keyword,'%'))
             or lower(r.description) like lower(concat('%',:keyword,'%'))
-        order by r.createdAt desc
+        order by r.id asc
     """)
     Page<RepairOrder> search(
             @Param("keyword") String keyword,

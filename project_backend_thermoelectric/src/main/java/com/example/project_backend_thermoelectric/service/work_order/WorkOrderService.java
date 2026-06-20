@@ -10,6 +10,7 @@ import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOr
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderConsumableRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderReplacementRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
+import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -110,7 +111,7 @@ public class WorkOrderService implements IWorkOrderService {
         workOrder.setMaterialStatus("Chưa yêu cầu cấp phát");
 
         workOrder.setStartDate(LocalDateTime.now());
-        repairOrder.setStatus("Đang xử lý");
+        repairOrder.setStatus(RepairOrderStatus.DANG_THUC_HIEN);
 
         repairOrderRepository.save(repairOrder);
         WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);

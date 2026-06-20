@@ -1,5 +1,6 @@
 package com.example.project_backend_thermoelectric.entity;
 
+import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +23,8 @@ public class RepairOrder {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RepairOrderStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
