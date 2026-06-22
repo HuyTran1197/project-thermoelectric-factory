@@ -3,7 +3,7 @@ package com.example.project_backend_thermoelectric.controller;
 import com.example.project_backend_thermoelectric.dto.DashboardDto;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
-import com.example.project_backend_thermoelectric.repository.repair_order.RepairOrderRepository;
+import com.example.project_backend_thermoelectric.repository.repair_order.IRepairOrderRepository;
 import com.example.project_backend_thermoelectric.repository.tool.ToolRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardController {
 
     private final IEquipmentRepo equipmentRepo;
-    private final RepairOrderRepository repairOrderRepo;
+    private final IRepairOrderRepository repairOrderRepo;
     private final IUserRepo userRepo;
     private final ToolRepository toolRepo;
 

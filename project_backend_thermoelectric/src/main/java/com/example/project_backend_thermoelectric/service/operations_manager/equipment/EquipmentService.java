@@ -37,6 +37,11 @@ public class EquipmentService implements IEquipmentService{
     private IEquipmentParameterRepo equipmentParameterRepo;
 
     @Override
+    public List<Equipment> getList() {
+        return equipmentRepo.findAll();
+    }
+
+    @Override
     public Page<EquipmentDto> searchEquipmentDto(String name, String code, String status,String system,String type, Pageable pageable) {
         return equipmentRepo.searchEquipmentDto("%"+name+"%",
                 "%"+code+"%",

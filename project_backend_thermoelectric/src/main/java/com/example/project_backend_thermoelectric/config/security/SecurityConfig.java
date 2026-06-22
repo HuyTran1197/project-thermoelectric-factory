@@ -64,6 +64,8 @@ public class SecurityConfig {
                         )
                         .hasAnyAuthority(
                                 "ROLE_NHÂN SỰ",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
 
@@ -79,6 +81,8 @@ public class SecurityConfig {
                                 "ROLE_QUẢN ĐỐC VẬN HÀNH",
                                 "ROLE_TRƯỞNG CA",
                                 "ROLE_TRƯỞNG KÍP",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
 
@@ -119,6 +123,19 @@ public class SecurityConfig {
                         .hasAnyAuthority(
                                 "ROLE_TRƯỞNG CA",
                                 "ROLE_TRƯỞNG KÍP",
+                                "ROLE_ADMIN"
+                        )
+
+                        // ==========================
+                        // QUẢN ĐỐC SỬA CHỮA / TỔ TRƯỞNG
+                        // CẤP PHIẾU CÔNG TÁC
+                        // ==========================
+                        .requestMatchers(
+                                "/api/work-orders/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
 
