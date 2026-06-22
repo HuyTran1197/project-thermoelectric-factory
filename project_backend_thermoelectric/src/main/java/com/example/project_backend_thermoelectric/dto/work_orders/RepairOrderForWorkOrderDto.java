@@ -12,5 +12,5 @@ public interface RepairOrderForWorkOrderDto {
     LocalDateTime getCreatedAt();
     String getStatus();
 
-    Boolean getHasWorkOrder();
+    Integer getHasWorkOrder();
 }

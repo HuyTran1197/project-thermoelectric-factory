@@ -415,17 +415,6 @@ INSERT INTO parameter_definitions (name, unit, type_id) VALUES
 ('Hãng sản xuất', NULL, 8),
 ('Model', NULL, 8);
 
-select et.name as type,e.name as name,e.code as kks,pd.name as parameters,ep.value as value 
-from equipment_types et
-join equipments e on e.type_id = et.id
-join parameter_definitions pd on pd.type_id = et.id
-left join equipment_parameters ep on ep.parameter_id = pd.id
-and ep.equipment_id = e.id
-where et.name = 'Động cơ'
-and e.id = 3;
-
-select * from equipments
-where type_id = 5;
 
 INSERT INTO equipment_parameters (equipment_id, parameter_id, value) VALUES
 
@@ -485,20 +474,13 @@ INSERT INTO equipment_parameters (equipment_id, parameter_id, value) VALUES
 (6, 56, 'Siemens'),
 (6, 57, 'SITRANS TS');
 
-select e.name as equipment,pd.name as parameter, ep.value as value
- from equipment_parameters ep
-join equipments e on e.id = ep.equipment_id
-join parameter_definitions pd on pd.id = ep.parameter_id;
-
--- EquipmentRequestDto
-select e.id as equipmentId,pd.id as paramId,e.name as name,
-e.code as code, e.system_id as systemId, e.type_id as typeId,
-pd.name as paramName,pd.unit as unit,ep.value as value,
-e.status as status 
-from equipments e
-join equipment_types et on et.id = e.type_id
-join parameter_definitions pd on pd.type_id = et.id
-join equipment_parameters ep on ep.parameter_id = pd.id;
 
 
+-- 1. Xoá constraint cũ đang trỏ sai bảng
+ALTER TABLE work_orders DROP FOREIGN KEY work_orders_ibfk_1;
+
+-- 2. Thêm lại constraint trỏ đúng về bảng repair_order
+ALTER TABLE work_orders
+ADD CONSTRAINT work_orders_ibfk_1
+FOREIGN KEY (request_id) REFERENCES repair_order(id);
 

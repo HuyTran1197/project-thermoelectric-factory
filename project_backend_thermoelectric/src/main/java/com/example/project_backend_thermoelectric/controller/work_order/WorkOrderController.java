@@ -2,7 +2,9 @@ package com.example.project_backend_thermoelectric.controller.work_order;
 
 import com.example.project_backend_thermoelectric.dto.work_orders.AssignWorkOrderDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.CreateWorkOrderDto;
+import com.example.project_backend_thermoelectric.dto.work_orders.CreateWorkOrderResponseDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.WorkOrderResponseDto;
+import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.service.work_order.IWorkOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -68,10 +70,14 @@ public class WorkOrderController {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CreateWorkOrderDto dto) {
+        WorkOrder workOrder = workOrderService.create(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(
-                        workOrderService.create(dto)
+                        new CreateWorkOrderResponseDto(
+                                workOrder.getId(),
+                                workOrder.getCode()
+                        )
                 );
     }
 

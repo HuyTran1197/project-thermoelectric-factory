@@ -22,7 +22,6 @@ public interface IWorkOrderRepository
             "e.name as equipment, " +
             "ro.description as description, " +
             "wo.status as status, " +
-
             "case " +
             "when wo.status = 'MOI_TAO' then 'Mới tạo' " +
             "when wo.status = 'DA_PHAN_CONG' then 'Đã phân công' " +
@@ -30,22 +29,20 @@ public interface IWorkOrderRepository
             "when wo.status = 'CHO_VAT_TU' then 'Chờ vật tư' " +
             "when wo.status = 'HOAN_THANH' then 'Hoàn thành' " +
             "end as statusDisplay " +
-
             "from work_orders wo " +
             "join repair_order ro on ro.id = wo.request_id " +
             "join equipments e on e.id = ro.equipment_id " +
-            "where (:searchCode is null or wo.code like concat('%',:searchCode,'%')) " +
-            "and (:searchEquipment is null or e.name like concat('%',:searchEquipment,'%')) " +
-            "and (:searchStatus is null or wo.status = :searchStatus)",
-
+            "where (:searchCode is null or :searchCode = '' or wo.code like concat('%',:searchCode,'%')) " +
+            "and (:searchEquipment is null or :searchEquipment = '' or e.name like concat('%',:searchEquipment,'%')) " +
+            "and (:searchStatus is null or :searchStatus = '' or wo.status = :searchStatus)",
             countQuery =
                     "select count(*) " +
                             "from work_orders wo " +
                             "join repair_order ro on ro.id = wo.request_id " +
                             "join equipments e on e.id = ro.equipment_id " +
-                            "where (:searchCode is null or wo.code like concat('%',:searchCode,'%')) " +
-                            "and (:searchEquipment is null or e.name like concat('%',:searchEquipment,'%')) " +
-                            "and (:searchStatus is null or wo.status = :searchStatus)",
+                            "where (:searchCode is null or :searchCode = '' or wo.code like concat('%',:searchCode,'%')) " +
+                            "and (:searchEquipment is null or :searchEquipment = '' or e.name like concat('%',:searchEquipment,'%')) " +
+                            "and (:searchStatus is null or :searchStatus = '' or wo.status = :searchStatus)",
             nativeQuery = true)
     Page<WorkOrderResponseDto> search(
             @Param("searchCode") String code,

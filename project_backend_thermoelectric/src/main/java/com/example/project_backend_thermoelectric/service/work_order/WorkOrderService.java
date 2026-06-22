@@ -130,6 +130,7 @@ public class WorkOrderService implements IWorkOrderService {
                         );
 
         assignmentRepo.deleteByWorkOrderId(workOrderId);
+        assignmentRepo.flush(); // ép Hibernate xoá thật xuống DB ngay, tránh xung đột unique key với insert sau
         saveAssignments(
                 workOrder,
                 dto.getAssignments()
