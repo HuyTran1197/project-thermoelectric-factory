@@ -1,10 +1,16 @@
 package com.example.project_backend_thermoelectric.service;
 
+import com.example.project_backend_thermoelectric.entity.Employee;
 import com.example.project_backend_thermoelectric.entity.Tool;
 import com.example.project_backend_thermoelectric.entity.ToolBorrowing;
+import com.example.project_backend_thermoelectric.entity.User;
+import com.example.project_backend_thermoelectric.repository.personnel_manager.IEmployeeRepo;
+import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.tool.ToolBorrowingRepository;
 import com.example.project_backend_thermoelectric.repository.tool.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -22,6 +28,9 @@ public class ToolBorrowingService {
 
     @Autowired
     private ToolRepository toolRepository;
+    @Autowired
+    private IUserRepo userRepo;
+
 
     public Page<ToolBorrowing> getAllBorrowings(
             int page,
@@ -75,37 +84,77 @@ public class ToolBorrowingService {
 
     @Transactional
     public List<ToolBorrowing> borrowToolsBatch(List<ToolBorrowing> borrowings) {
+
         if (borrowings == null || borrowings.isEmpty()) {
             throw new RuntimeException("Danh sách mượn trống");
         }
 
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String username = authentication.getName();
+
+        User user = userRepo
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy user"));
+
+        Employee employee = user.getEmployee();
+
         LocalDateTime now = LocalDateTime.now();
+
         for (ToolBorrowing borrowing : borrowings) {
-            if (borrowing.getTool() == null || borrowing.getTool().getId() == null) {
-                throw new RuntimeException("Thông tin công cụ bị thiếu");
-            }
-            if (borrowing.getEmployee() == null || borrowing.getEmployee().getId() == null) {
-                throw new RuntimeException("Thông tin nhân viên bị thiếu");
-            }
-            if (borrowing.getQuantity() == null || borrowing.getQuantity() <= 0) {
-                throw new RuntimeException("Số lượng không hợp lệ cho công cụ: " + borrowing.getTool().getId());
+
+            if (borrowing.getTool() == null ||
+                    borrowing.getTool().getId() == null) {
+
+                throw new RuntimeException(
+                        "Thông tin công cụ bị thiếu"
+                );
             }
 
-            Tool tool = toolRepository.findById(borrowing.getTool().getId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy công cụ ID: " + borrowing.getTool().getId()));
+            borrowing.setEmployee(employee);
 
-            if (tool.getAvailableQuantity() < borrowing.getQuantity()) {
-                throw new RuntimeException("Không đủ số lượng trong kho cho: " + tool.getName() + ". Hiện có: " + tool.getAvailableQuantity());
+            if (borrowing.getQuantity() == null ||
+                    borrowing.getQuantity() <= 0) {
+
+                throw new RuntimeException(
+                        "Số lượng không hợp lệ cho công cụ: "
+                                + borrowing.getTool().getId()
+                );
             }
 
-            tool.setAvailableQuantity(tool.getAvailableQuantity() - borrowing.getQuantity());
+            Tool tool = toolRepository.findById(
+                    borrowing.getTool().getId()
+            ).orElseThrow(() ->
+                    new RuntimeException(
+                            "Không tìm thấy công cụ ID: "
+                                    + borrowing.getTool().getId()
+                    ));
+
+            if (tool.getAvailableQuantity() <
+                    borrowing.getQuantity()) {
+
+                throw new RuntimeException(
+                        "Không đủ số lượng trong kho cho: "
+                                + tool.getName()
+                );
+            }
+
+            tool.setAvailableQuantity(
+                    tool.getAvailableQuantity()
+                            - borrowing.getQuantity()
+            );
+
             toolRepository.save(tool);
 
             if (borrowing.getBorrowDate() == null) {
                 borrowing.setBorrowDate(now);
             }
-            borrowing.setStatus("WAITING"); // Chờ duyệt theo yêu cầu
+
+            borrowing.setStatus("WAITING");
         }
+
         return borrowingRepository.saveAll(borrowings);
     }
 

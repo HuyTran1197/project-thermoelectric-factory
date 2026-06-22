@@ -32,15 +32,13 @@ public class RepairOrderController {
 
     @PostMapping
     public ResponseEntity<?> create(
-            @RequestBody
-            CreateRepairOrderDto dto
+            @RequestBody CreateRepairOrderDto dto
     ) {
 
-        return ResponseEntity.status(
-                HttpStatus.CREATED
-        ).body(
-                repairOrderService.create(dto)
-        );
+        repairOrderService.create(dto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Tạo thành công");
     }
 
     @PutMapping("/{id}")
@@ -48,6 +46,11 @@ public class RepairOrderController {
             @PathVariable Long id,
             @RequestBody UpdateRepairOrderDto dto
     ) {
+
+        System.out.println(dto.getTitle());
+        System.out.println(dto.getDescription());
+        System.out.println(dto.getStatus());
+        System.out.println(dto.getEquipmentId());
 
         return ResponseEntity.ok(
                 repairOrderService.update(id, dto)
@@ -63,4 +66,5 @@ public class RepairOrderController {
 
         return ResponseEntity.noContent().build();
     }
+
 }

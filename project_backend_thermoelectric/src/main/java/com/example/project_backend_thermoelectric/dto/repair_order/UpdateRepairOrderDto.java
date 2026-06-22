@@ -1,5 +1,6 @@
 package com.example.project_backend_thermoelectric.dto.repair_order;
 
+import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class UpdateRepairOrderDto {
 
     private String description;
 
-    private String status;
+    private RepairOrderStatus status;
 
     private Long equipmentId;
 }

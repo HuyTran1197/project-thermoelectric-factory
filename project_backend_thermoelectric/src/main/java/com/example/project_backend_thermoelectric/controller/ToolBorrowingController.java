@@ -50,11 +50,21 @@ public class ToolBorrowingController {
 
 
     @PostMapping("/batch")
-    public ResponseEntity<?> borrowToolsBatch(@RequestBody List<ToolBorrowing> borrowings) {
+    public ResponseEntity<?> borrowToolsBatch(
+            @RequestBody List<ToolBorrowing> borrowings
+    ) {
         try {
-            return ResponseEntity.ok(borrowingService.borrowToolsBatch(borrowings));
+
+            borrowingService.borrowToolsBatch(borrowings);
+
+            return ResponseEntity.ok(
+                    "Gửi yêu cầu mượn thành công"
+            );
+
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
         }
     }
 
