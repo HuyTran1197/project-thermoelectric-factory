@@ -61,7 +61,7 @@ public class MaterialExportController {
                 @RequestBody StorekeeperApproveDto approveDTO
         ) {
         try {
-            materialExportService.approveSpecificMaterials(workOrderId, staffId, approveDTO.getConsumableIds(), approveDTO.getReplacementIds());
+            materialExportService.approveSpecificMaterials(workOrderId, approveDTO.getConsumableIds(), approveDTO.getReplacementIds());
             return ResponseEntity.ok(Map.of("success", true, "message", "Phê duyệt và xuất kho vật tư thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));

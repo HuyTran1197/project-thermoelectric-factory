@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IMaterialExportService {
     void exportMaterialToWorkOrder(FullMaterialExportDto exportDTO);
-    void approveAndReleaseMaterials(Long workOrderId, Long warehouseStaffId);
+    void approveAndReleaseMaterials(Long workOrderId);
 
-    void approveSpecificMaterials(Long workOrderId, Long staffId, List<Long> approvedConsumableIds, List<Long> approvedReplacementIds);
+    void approveSpecificMaterials(Long workOrderId, List<Long> approvedConsumableIds, List<Long> approvedReplacementIds);
 }

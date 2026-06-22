@@ -10,6 +10,8 @@ import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOr
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderReplacementRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,88 +98,46 @@ public class MaterialExportService implements IMaterialExportService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void approveAndReleaseMaterials(Long workOrderId, Long warehouseStaffId) {
-
-        // 1. Kiểm tra thông tin Thủ kho
-        User staff = userRepository.findById(warehouseStaffId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin Thủ kho ID: " + warehouseStaffId));
-
-        // 2. Tìm phiếu sửa chữa (WorkOrder) cha
+    public void approveAndReleaseMaterials(Long workOrderId) {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
         if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
-            throw new RuntimeException("❌ Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể xuất lại!");
+            throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể xuất lại!");
         }
 
+        List<Long> allConsumableIds = workOrderConsumableRepository.findByWorkOrder(workOrder)
+                .stream().filter(req -> !req.isReleased()).map(req -> req.getMaterial().getId()).toList();
 
-        List<WorkOrderConsumable> requestedConsumables = workOrderConsumableRepository.findByWorkOrder(workOrder);
+        List<Long> allReplacementIds = workOrderReplacementRepository.findByWorkOrder(workOrder)
+                .stream().filter(req -> !req.isReleased()).map(req -> req.getMaterial().getId()).toList();
 
-        for (WorkOrderConsumable req : requestedConsumables) {
-            ConsumableMaterial material = req.getMaterial();
-            int qtyToExport = req.getQuantity();
-
-            int currentStock = consumableTxRepository.getStockQuantity(material.getId());
-
-            if (currentStock < qtyToExport) {
-                throw new RuntimeException("Kho không đủ số lượng cho vật tư tiêu hao: " + material.getName()
-                        + " (Hiện tồn: " + currentStock + ", Quản đốc yêu cầu: " + qtyToExport + ")");
-            }
-
-            ConsumableTransaction tx = new ConsumableTransaction();
-            tx.setMaterial(material);
-            tx.setType(TransactionType.EXPORT);
-            tx.setQuantity(qtyToExport);
-            tx.setCreatedBy(staff);
-            tx.setCreatedAt(LocalDateTime.now());
-
-            consumableTxRepository.save(tx);
-        }
-
-        List<WorkOrderReplacement> requestedReplacements = workOrderReplacementRepository.findByWorkOrder(workOrder);
-
-        for (WorkOrderReplacement req : requestedReplacements) {
-            ReplacementMaterial material = req.getMaterial();
-            int qtyToExport = req.getQuantity();
-
-            int currentStock = replacementTxRepository.getStockQuantity(material.getId());
-
-            if (currentStock < qtyToExport) {
-                throw new RuntimeException("Kho không đủ số lượng cho phụ tùng thay thế: " + material.getName()
-                        + " (Hiện tồn: " + currentStock + ", Quản đốc yêu cầu: " + qtyToExport + ")");
-            }
-
-            ReplacementTransaction tx = new ReplacementTransaction();
-            tx.setMaterial(material);
-            tx.setType(TransactionType.EXPORT);
-            tx.setQuantity(qtyToExport);
-            tx.setCreatedBy(staff);
-            tx.setCreatedAt(LocalDateTime.now());
-
-            replacementTxRepository.save(tx);
-        }
-        workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
-        workOrderRepository.save(workOrder);
+        this.approveSpecificMaterials(workOrderId, allConsumableIds, allReplacementIds);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void approveSpecificMaterials(Long workOrderId, Long staffId,
+    public void approveSpecificMaterials(Long workOrderId,
                                          List<Long> approvedConsumableIds,
                                          List<Long> approvedReplacementIds) {
 
-        User staff = userRepository.findById(staffId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin Thủ kho ID: " + staffId));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Bạn chưa đăng nhập hoặc phiên làm việc đã hết hạn!");
+        }
+
+        String currentUsername = authentication.getName();
+        User staff = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin tài khoản: " + currentUsername));
 
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
-        // 🆕 Chỉ chặn khi ĐÃ cấp phát hoàn toàn rồi
+
         if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
             throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho hoàn tất!");
         }
 
-        // --- Xử lý vật tư tiêu hao ---
         List<WorkOrderConsumable> requestedConsumables =
                 workOrderConsumableRepository.findByWorkOrder(workOrder);
 
@@ -186,7 +146,8 @@ public class MaterialExportService implements IMaterialExportService {
 
             if (approvedConsumableIds != null && approvedConsumableIds.contains(materialId)) {
 
-                if (req.isReleased()) continue; // 🆕 Đã cấp rồi thì bỏ qua
+                if (req.isReleased()) continue;
+
 
                 ConsumableMaterial material = req.getMaterial();
                 int qtyToExport = req.getQuantity();
@@ -211,7 +172,6 @@ public class MaterialExportService implements IMaterialExportService {
             }
         }
 
-        // --- Xử lý phụ tùng thay thế ---
         List<WorkOrderReplacement> requestedReplacements =
                 workOrderReplacementRepository.findByWorkOrder(workOrder);
 
@@ -240,12 +200,11 @@ public class MaterialExportService implements IMaterialExportService {
                 tx.setCreatedAt(LocalDateTime.now());
                 replacementTxRepository.save(tx);
 
-                req.setReleased(true); // 🆕
+                req.setReleased(true); //
                 workOrderReplacementRepository.save(req);
             }
         }
 
-        // 🆕 Chỉ nâng lên DA_CAP_PHAT khi TẤT CẢ item đã released, còn không thì giữ CHO_CAP_PHAT
         boolean allDone = workOrderConsumableRepository.findByWorkOrder(workOrder)
                 .stream().allMatch(WorkOrderConsumable::isReleased)
                 && workOrderReplacementRepository.findByWorkOrder(workOrder)
@@ -255,6 +214,5 @@ public class MaterialExportService implements IMaterialExportService {
             workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
             workOrderRepository.save(workOrder);
         }
-        // Nếu chưa xong hết → không save gì, phiếu giữ nguyên CHO_CAP_PHAT
     }
 }
