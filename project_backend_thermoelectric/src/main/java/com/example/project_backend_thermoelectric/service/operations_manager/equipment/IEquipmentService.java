@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IEquipmentService {
+    List<Equipment> getList();
+
     Page<EquipmentDto> searchEquipmentDto(
             @Param("name") String name,
             @Param("code") String code,

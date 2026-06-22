@@ -8,21 +8,23 @@ import com.example.project_backend_thermoelectric.entity.User;
 import com.example.project_backend_thermoelectric.enums.RepairOrderStatus;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
-import com.example.project_backend_thermoelectric.repository.repair_order.RepairOrderRepository;
+import com.example.project_backend_thermoelectric.repository.repair_order.IRepairOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class RepairOrderService implements IRepairOrderService {
 
-    private final RepairOrderRepository repairOrderRepository;
+    private final IRepairOrderRepository repairOrderRepository;
     private final IEquipmentRepo equipmentRepository;
     private final IUserRepo userRepo;
 
