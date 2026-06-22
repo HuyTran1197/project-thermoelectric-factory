@@ -2,9 +2,12 @@ package com.example.project_backend_thermoelectric.service.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.CreateTechnicalReportDto;
 import com.example.project_backend_thermoelectric.dto.technical_report.EquipmentReportDto;
+import com.example.project_backend_thermoelectric.dto.technical_report.ReplacementDto;
+import com.example.project_backend_thermoelectric.entity.ReplacementMaterial;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
 import com.example.project_backend_thermoelectric.entity.User;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
+import com.example.project_backend_thermoelectric.repository.materials_manager.IReplacementMaterialRepository;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.technical_report.ITechnicalReportRepo;
@@ -21,9 +24,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class TechnicalReportService implements ITechnicalReportService{
+public class TechnicalReportService implements ITechnicalReportService {
     @Autowired
     private IEquipmentRepo equipmentRepo;
+
+    @Autowired
+    private IReplacementMaterialRepository materialRepo;
+    @Autowired
+    private IUserRepo userRepo;
 
     @Autowired
     private ITechnicalReportRepo technicalReportRepository;
@@ -40,19 +48,27 @@ public class TechnicalReportService implements ITechnicalReportService{
         WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
+//        User user = userRepo.findById(dto.getCreatedBy())
+//                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
         TechnicalReport report = new TechnicalReport();
         report.setWorkOrder(workOrder);
-        report.setCreatedBy(null); // bạn có thể set user hiện tại
+//        report.setCreatedBy(user);
+        report.setCreatedBy(null);
         report.setCreatedAt(LocalDateTime.now());
+
+        // Gán tên thiết bị trong content như trước
         if (dto.getEquipmentReports() != null) {
             for (EquipmentReportDto eq : dto.getEquipmentReports()) {
                 if (eq.getEquipmentId() != null) {
                     equipmentRepo.findById(eq.getEquipmentId())
-                            .ifPresent(e -> eq.setEquipmentName(e.getName()));
+                            .ifPresent(e -> {
+                                eq.setEquipmentName(e.getName());
+                                eq.setEquipmentCode(e.getCode());
+                            });
                 }
             }
         }
-
         try {
             String contentJson = objectMapper.writeValueAsString(dto);
             report.setContent(contentJson);
@@ -74,14 +90,18 @@ public class TechnicalReportService implements ITechnicalReportService{
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
         existing.setWorkOrder(workOrder);
-
+        //up
+//        if (dto.getCreatedBy() != null) {
+//            User user = userRepo.findById(dto.getCreatedBy())
+//                    .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+//            existing.setCreatedBy(user);
+//        }
         try {
             String contentJson = objectMapper.writeValueAsString(dto);
             existing.setContent(contentJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Lỗi serialize JSON cho biên bản", e);
         }
-
         return technicalReportRepository.save(existing);
     }
 

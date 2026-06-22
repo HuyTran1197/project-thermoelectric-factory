@@ -64,6 +64,8 @@ public class SecurityConfig {
                         )
                         .hasAnyAuthority(
                                 "ROLE_NHÂN SỰ",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
 
@@ -77,6 +79,8 @@ public class SecurityConfig {
                         )
                         .hasAnyAuthority(
                                 "ROLE_QUẢN ĐỐC VẬN HÀNH",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
 
@@ -91,6 +95,8 @@ public class SecurityConfig {
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
 

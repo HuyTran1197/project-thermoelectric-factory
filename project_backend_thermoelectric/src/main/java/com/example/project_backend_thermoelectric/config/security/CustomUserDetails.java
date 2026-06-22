@@ -3,6 +3,7 @@ package com.example.project_backend_thermoelectric.config.security;
 import com.example.project_backend_thermoelectric.entity.User;
 import com.example.project_backend_thermoelectric.entity.UserRole;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
