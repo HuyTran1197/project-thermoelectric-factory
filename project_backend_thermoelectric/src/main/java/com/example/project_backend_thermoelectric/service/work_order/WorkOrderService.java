@@ -136,6 +136,43 @@ public class WorkOrderService implements IWorkOrderService {
                 dto.getAssignments()
         );
     }
+    @Override
+    public void complete(Long workOrderId) {
+        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phieu cong tac"));
+
+        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+            return;
+        }
+
+        workOrder.setStatus(WorkOrderStatus.HOAN_THANH);
+        workOrder.setEndDate(LocalDateTime.now());
+
+        // ✅ Bỏ phần đổi RepairOrder status ở đây
+        workOrderRepository.save(workOrder);
+    }
+//    @Override
+//    public void complete(Long workOrderId) {
+//        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+//                .orElseThrow(
+//                        () -> new RuntimeException(
+//                                "Khong tim thay phieu cong tac"
+//                        )
+//                );
+//
+//        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+//            return;
+//        }
+//
+//        workOrder.setStatus(WorkOrderStatus.HOAN_THANH);
+//        workOrder.setEndDate(LocalDateTime.now());
+//
+//        RepairOrder repairOrder = workOrder.getRequest();
+//        repairOrder.setStatus(RepairOrderStatus.CHO_NGHIEM_THU); // ✅ đổi từ CHO_NGHIEM_THU
+//
+//        repairOrderRepository.save(repairOrder);
+//        workOrderRepository.save(workOrder);
+//    }
 
     @Override
     @Transactional(readOnly = true)

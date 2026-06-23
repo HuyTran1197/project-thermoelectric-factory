@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RepairOrderStatus {
     CHO_DUYET,
-    DA_DUYET,
     DANG_THUC_HIEN,
     DA_HOAN_THANH,
-    KHONG_DUYET;
 }
