@@ -32,7 +32,6 @@ public interface IWorkOrderRepository
             "ro.description as description, " +
             "wo.status as status, " +
             "case " +
-            "when wo.status = 'MOI_TAO' then 'Mới tạo' " +
             "when wo.status = 'DA_PHAN_CONG' then 'Đã phân công' " +
             "when wo.status = 'DANG_THUC_HIEN' then 'Đang thực hiện' " +
             "when wo.status = 'CHO_VAT_TU' then 'Chờ vật tư' " +
