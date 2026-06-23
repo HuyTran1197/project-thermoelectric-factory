@@ -136,6 +136,8 @@ public class SecurityConfig {
                         .hasAnyAuthority(
                                 "ROLE_QUẢN ĐỐC SỬA CHỮA",
                                 "ROLE_TỔ TRƯỞNG",
+                                "ROLE_TRƯỞNG CA",
+                                "ROLE_TRƯỞNG KÍP",
                                 "ROLE_ADMIN"
                         )
 
