@@ -3,18 +3,27 @@ package com.example.project_backend_thermoelectric.repository.work_orders;
 import com.example.project_backend_thermoelectric.dto.work_orders.RepairOrderForWorkOrderDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.WorkOrderResponseDto;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface IWorkOrderRepository
         extends JpaRepository<WorkOrder, Long> {
+    List<WorkOrder> getWorkOrdersByMaterialStatus(MaterialStatus materialStatus);
+
+    long countByMaterialStatus(MaterialStatus materialStatus);
 
     boolean existsByRequestId(Long repairOrderId);
 
     boolean existsByCode(String code);
+    Optional<WorkOrder> findByRequestId(Long repairOrderId);
+
 
     @Query(value = "select " +
             "wo.id as id, " +
