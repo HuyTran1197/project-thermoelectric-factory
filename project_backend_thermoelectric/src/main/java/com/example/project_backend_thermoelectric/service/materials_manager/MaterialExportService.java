@@ -9,6 +9,7 @@ import com.example.project_backend_thermoelectric.repository.personnel_manager.I
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderConsumableRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderReplacementRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
+import com.example.project_backend_thermoelectric.enums.WorkOrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,6 +53,10 @@ public class MaterialExportService implements IMaterialExportService {
         WorkOrder workOrder = workOrderRepository.findById(exportDTO.getWorkOrderId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + exportDTO.getWorkOrderId()));
 
+        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+            throw new RuntimeException("Phiếu công tác đã hoàn thành, không thể yêu cầu cấp vật tư");
+        }
+
         MaterialStatus currentStatus = workOrder.getMaterialStatus();
         if (currentStatus == MaterialStatus.DA_CAP_PHAT) {
             throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể chỉnh sửa!");
@@ -93,6 +98,7 @@ public class MaterialExportService implements IMaterialExportService {
         }
 
         workOrder.setMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        workOrder.setStatus(WorkOrderStatus.CHO_VAT_TU);
         workOrderRepository.save(workOrder);
     }
 
@@ -133,6 +139,9 @@ public class MaterialExportService implements IMaterialExportService {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
+        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+            throw new RuntimeException("Phiếu công tác đã hoàn thành, không thể cấp phát vật tư");
+        }
 
         if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
             throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho hoàn tất!");
@@ -212,6 +221,7 @@ public class MaterialExportService implements IMaterialExportService {
 
         if (allDone) {
             workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
+            workOrder.setStatus(WorkOrderStatus.DANG_THUC_HIEN);
             workOrderRepository.save(workOrder);
         }
     }

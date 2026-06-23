@@ -148,31 +148,6 @@ CREATE TABLE equipment_parameters (
 ) ENGINE=InnoDB;
 
 -- ======================
--- 15. REQUESTS
--- ======================
-CREATE TABLE requests (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    created_by BIGINT NOT NULL,
-    status VARCHAR(50) DEFAULT 'NEW',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES users(id)
-) ENGINE=InnoDB;
-
--- ======================
--- 16. REQUEST_EQUIPMENTS (FIXED)
--- ======================
-CREATE TABLE request_equipments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    request_id BIGINT NOT NULL,
-    equipment_id BIGINT NOT NULL,
-    UNIQUE(request_id, equipment_id),
-    FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE,
-    FOREIGN KEY (equipment_id) REFERENCES equipments(id)
-) ENGINE=InnoDB;
-
--- ======================
 -- 17. WORK_ORDERS
 -- ======================
 CREATE TABLE work_orders (
@@ -475,7 +450,6 @@ INSERT INTO equipment_parameters (equipment_id, parameter_id, value) VALUES
 (6, 57, 'SITRANS TS');
 
 
-
 -- 1. Xoá constraint cũ đang trỏ sai bảng
 ALTER TABLE work_orders DROP FOREIGN KEY work_orders_ibfk_1;
 
@@ -484,3 +458,4 @@ ALTER TABLE work_orders
 ADD CONSTRAINT work_orders_ibfk_1
 FOREIGN KEY (request_id) REFERENCES repair_order(id);
 
+SHOW CREATE TABLE work_order_assignments;
