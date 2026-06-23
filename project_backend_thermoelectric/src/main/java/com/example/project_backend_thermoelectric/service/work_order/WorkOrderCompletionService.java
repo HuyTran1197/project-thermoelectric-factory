@@ -22,7 +22,7 @@ public class WorkOrderCompletionService {
     @Transactional(readOnly = true)
     public WorkOrderDetailDto getByRepairOrder(Long repairOrderId) {
         WorkOrder workOrder = workOrderRepository.findByRequestId(repairOrderId)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay Work Order cua Repair Order"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu công tác của yêu cầu sửa chữa"));
 
         return workOrderService.detail(workOrder.getId());
     }
@@ -31,17 +31,17 @@ public class WorkOrderCompletionService {
     @Transactional
     public void closeWorkOrder(Long workOrderId) {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay Work Order"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu công tác"));
 
         if (workOrder.getStatus() != WorkOrderStatus.HOAN_THANH) {
-            throw new RuntimeException("Chi duoc dong phieu khi Work Order o trang thai HOAN_THANH");
+            throw new RuntimeException("Chỉ được đóng phiếu công tác khi ở trạng thái HOAN_THANH");
         }
 
         RepairOrder repairOrder = workOrder.getRequest();
 
         // ✅ Chặn đóng lần 2
         if (repairOrder.getStatus() == RepairOrderStatus.DA_HOAN_THANH) {
-            throw new RuntimeException("Phieu nay da duoc dong truoc do");
+            throw new RuntimeException("Phiếu này đóng trước đó");
         }
 
         repairOrder.setStatus(RepairOrderStatus.DA_HOAN_THANH);
