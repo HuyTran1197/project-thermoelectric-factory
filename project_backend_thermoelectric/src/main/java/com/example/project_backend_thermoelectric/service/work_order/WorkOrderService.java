@@ -2,6 +2,7 @@ package com.example.project_backend_thermoelectric.service.work_order;
 
 import com.example.project_backend_thermoelectric.dto.work_orders.*;
 import com.example.project_backend_thermoelectric.entity.*;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import com.example.project_backend_thermoelectric.enums.WorkOrderStatus;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IEmployeeRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
@@ -106,9 +107,9 @@ public class WorkOrderService implements IWorkOrderService {
         workOrder.setRequest(repairOrder);
         workOrder.setCreatedBy(currentUser);
 
-        workOrder.setStatus(WorkOrderStatus.MOI_TAO);
+        workOrder.setStatus(WorkOrderStatus.DA_PHAN_CONG);
 
-        workOrder.setMaterialStatus("Chưa yêu cầu cấp phát");
+        workOrder.setMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
 
         workOrder.setStartDate(LocalDateTime.now());
         repairOrder.setStatus(RepairOrderStatus.DANG_THUC_HIEN);
@@ -136,6 +137,43 @@ public class WorkOrderService implements IWorkOrderService {
                 dto.getAssignments()
         );
     }
+    @Override
+    public void complete(Long workOrderId) {
+        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phieu cong tac"));
+
+        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+            return;
+        }
+
+        workOrder.setStatus(WorkOrderStatus.HOAN_THANH);
+        workOrder.setEndDate(LocalDateTime.now());
+
+        // ✅ Bỏ phần đổi RepairOrder status ở đây
+        workOrderRepository.save(workOrder);
+    }
+//    @Override
+//    public void complete(Long workOrderId) {
+//        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+//                .orElseThrow(
+//                        () -> new RuntimeException(
+//                                "Khong tim thay phieu cong tac"
+//                        )
+//                );
+//
+//        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+//            return;
+//        }
+//
+//        workOrder.setStatus(WorkOrderStatus.HOAN_THANH);
+//        workOrder.setEndDate(LocalDateTime.now());
+//
+//        RepairOrder repairOrder = workOrder.getRequest();
+//        repairOrder.setStatus(RepairOrderStatus.CHO_NGHIEM_THU); // ✅ đổi từ CHO_NGHIEM_THU
+//
+//        repairOrderRepository.save(repairOrder);
+//        workOrderRepository.save(workOrder);
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -157,7 +195,7 @@ public class WorkOrderService implements IWorkOrderService {
         dto.setId(workOrder.getId());
         dto.setCode(workOrder.getCode());
         dto.setStatus(workOrder.getStatus().getDisplayName());
-        dto.setMaterialStatus(workOrder.getMaterialStatus());
+        dto.setMaterialStatus(workOrder.getMaterialStatus().getDisplayName());
         dto.setStartDate(workOrder.getStartDate());
         dto.setEndDate(workOrder.getEndDate());
 

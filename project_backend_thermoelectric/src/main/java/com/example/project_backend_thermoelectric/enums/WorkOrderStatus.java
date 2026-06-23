@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum WorkOrderStatus {
 
-    MOI_TAO("Mới tạo"),
     DA_PHAN_CONG("Đã phân công"),
     DANG_THUC_HIEN("Đang thực hiện"),
     CHO_VAT_TU("Chờ vật tư"),
