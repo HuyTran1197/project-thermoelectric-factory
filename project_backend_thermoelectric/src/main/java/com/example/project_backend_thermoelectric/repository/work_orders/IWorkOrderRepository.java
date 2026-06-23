@@ -3,14 +3,21 @@ package com.example.project_backend_thermoelectric.repository.work_orders;
 import com.example.project_backend_thermoelectric.dto.work_orders.RepairOrderForWorkOrderDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.WorkOrderResponseDto;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-public interface IWorkOrderRepository
-        extends JpaRepository<WorkOrder, Long> {
+import java.util.List;
+
+@Repository
+public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
+    List<WorkOrder> getWorkOrdersByMaterialStatus(MaterialStatus materialStatus);
+
+    long countByMaterialStatus(MaterialStatus materialStatus);
 
     boolean existsByRequestId(Long repairOrderId);
 
@@ -49,7 +56,6 @@ public interface IWorkOrderRepository
             @Param("searchEquipment") String equipment,
             @Param("searchStatus") String status,
             Pageable pageable);
-
     @Query("""
     SELECT COUNT(w)
     FROM WorkOrder w
@@ -59,4 +65,5 @@ public interface IWorkOrderRepository
             @Param("year")
             int year
     );
+
 }
