@@ -106,7 +106,7 @@ public class WorkOrderService implements IWorkOrderService {
         workOrder.setRequest(repairOrder);
         workOrder.setCreatedBy(currentUser);
 
-        workOrder.setStatus(WorkOrderStatus.MOI_TAO);
+        workOrder.setStatus(WorkOrderStatus.DA_PHAN_CONG);
 
         workOrder.setMaterialStatus("Chưa yêu cầu cấp phát");
 
