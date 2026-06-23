@@ -9,12 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
+public interface IWorkOrderRepository
+        extends JpaRepository<WorkOrder, Long> {
     List<WorkOrder> getWorkOrdersByMaterialStatus(MaterialStatus materialStatus);
 
     long countByMaterialStatus(MaterialStatus materialStatus);
@@ -22,6 +22,8 @@ public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
     boolean existsByRequestId(Long repairOrderId);
 
     boolean existsByCode(String code);
+    Optional<WorkOrder> findByRequestId(Long repairOrderId);
+
 
     @Query(value = "select " +
             "wo.id as id, " +
@@ -55,6 +57,7 @@ public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
             @Param("searchEquipment") String equipment,
             @Param("searchStatus") String status,
             Pageable pageable);
+
     @Query("""
     SELECT COUNT(w)
     FROM WorkOrder w
@@ -64,5 +67,4 @@ public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
             @Param("year")
             int year
     );
-
 }

@@ -193,7 +193,19 @@ public class SecurityConfig {
                                 "ROLE_TỔ TRƯỞNG",
                                 "ROLE_ADMIN"
                         )
-
+                                // ==========================
+                                // NGHIỆM THU - TRƯỞNG CA / TRƯỞNG KÍP
+                        // ==========================
+                                .requestMatchers(
+                                        "/api/work-order-completion/**"
+                                )
+                                .hasAnyAuthority(
+                                        "ROLE_TRƯỞNG CA",
+                                        "ROLE_TRƯỞNG KÍP",
+                                        "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                        "ROLE_TỔ TRƯỞNG",
+                                        "ROLE_ADMIN"
+                                )
                         // ==========================
                         // CÒN LẠI PHẢI LOGIN
                         // ==========================
