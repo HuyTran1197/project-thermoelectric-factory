@@ -11,6 +11,8 @@ import com.example.project_backend_thermoelectric.repository.personnel_manager.I
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,15 +42,24 @@ public class ConsumableTransactionService implements IConsumableTransactionServi
     }
 
     @Override
-    public ConsumableTransaction importConsumable(
-            ConsumableTransaction transaction
-    ) {
-
+    public ConsumableTransaction importConsumable(ConsumableTransaction transaction) {
+        // set time
         transaction.setCreatedAt(LocalDateTime.now());
+        //Lấy thông tin phiên đăng nhập hiện tại từ Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //check
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Bạn chưa đăng nhập hoặc phiên làm việc đã hết hạn!");
+        }
 
-        User user = userRepo.findById(1L).orElseThrow();
+        // Lấy username của người đang đăng nhập
+        String currentUsername = authentication.getName();
 
-        transaction.setCreatedBy(user);
+        //Truy vấn User từ database dựa vào username
+        User currentUser = userRepo.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin tài khoản: " + currentUsername));
+        //Gán user đang đăng nhập vào transaction
+        transaction.setCreatedBy(currentUser);
 
         return consumableTransactionRepository.save(transaction);
     }
