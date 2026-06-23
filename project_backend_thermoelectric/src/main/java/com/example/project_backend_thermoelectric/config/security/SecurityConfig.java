@@ -94,9 +94,11 @@ public class SecurityConfig {
                                 "/api/consumable-transactions/**",
                                 "/api/replacement-materials/**",
                                 "/api/replacement-transactions/**"
+
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
                                 "ROLE_ADMIN"
                         )
 
@@ -141,7 +143,9 @@ public class SecurityConfig {
                         // QUẢN ĐỐC SỬA CHỮA / TỔ TRƯỞNG
                         // ==========================
                         .requestMatchers(
-                                "/api/material-export/supply-slip"
+                                "/api/material-export/supply-slip",
+                                "/api/material-export/request-material",
+                                "/api/material-export/request-list"
                         )
                         .hasAnyAuthority(
                                 "ROLE_QUẢN ĐỐC SỬA CHỮA",
@@ -153,7 +157,10 @@ public class SecurityConfig {
                         // THỦ KHO VẬT TƯ
                         // ==========================
                         .requestMatchers(
-                                "/api/material-export/approve/**"
+                                "/api/material-export/approve/**",
+                                "/api/material-export/pending-list",
+                                "/api/material-export/pending-count"
+
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",

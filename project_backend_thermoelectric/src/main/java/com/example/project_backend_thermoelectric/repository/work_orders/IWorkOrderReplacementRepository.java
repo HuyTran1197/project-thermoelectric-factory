@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface IWorkOrderReplacementRepository extends JpaRepository<WorkOrderReplacement, Long> {
     List<WorkOrderReplacement> findByWorkOrder(WorkOrder workOrder);
+    void deleteByWorkOrder(WorkOrder workOrder);
 
     List<WorkOrderReplacement>
     findByWorkOrderId(Long workOrderId);

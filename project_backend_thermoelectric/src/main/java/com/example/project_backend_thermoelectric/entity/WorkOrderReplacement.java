@@ -31,4 +31,6 @@ public class WorkOrderReplacement {
     @ManyToOne
     @JoinColumn(name = "material_id", nullable = false)
     private ReplacementMaterial material;
+    @Column(name = "released", nullable = false)
+    private boolean released = false;
 }
