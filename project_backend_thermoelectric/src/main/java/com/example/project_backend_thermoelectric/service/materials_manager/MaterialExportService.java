@@ -215,4 +215,8 @@ public class MaterialExportService implements IMaterialExportService {
             workOrderRepository.save(workOrder);
         }
     }
+    @Override
+    public long countPendingForWarehouse() {
+        return workOrderRepository.countByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+    }
 }

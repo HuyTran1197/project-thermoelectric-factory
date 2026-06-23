@@ -105,11 +105,8 @@ public class MaterialExportController {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
     }
-    // 1. API lấy toàn bộ danh sách đang CHỜ CẤP PHÁT
-    // Trong Controller xử lý phần vật tư/phiếu sửa chữa của bạn
     @GetMapping("/pending-list")
     public ResponseEntity<List<WorkOrder>> getPendingWorkOrders() {
-        // Tìm các Phiếu sửa chữa có trạng thái vật tư là CHO_CAP_PHAT
         List<WorkOrder> pendingOrders = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
         return ResponseEntity.ok(pendingOrders);
     }
@@ -117,6 +114,16 @@ public class MaterialExportController {
     @GetMapping("/pending-count")
     public ResponseEntity<Long> countPendingWorkOrders() {
         long count = workOrderRepository.countByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        return ResponseEntity.ok(count);
+    }
+    @GetMapping("/request-list")
+    public ResponseEntity<List<WorkOrder>> getRequestList() {
+        List<WorkOrder> requestList = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
+        return ResponseEntity.ok(requestList);
+    }
+    @GetMapping("/request-material")
+    public ResponseEntity<Long> countRequestMaterial() {
+        long count = workOrderRepository.countByMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
         return ResponseEntity.ok(count);
     }
 }

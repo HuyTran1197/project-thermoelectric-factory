@@ -9,4 +9,6 @@ public interface IMaterialExportService {
     void approveAndReleaseMaterials(Long workOrderId);
 
     void approveSpecificMaterials(Long workOrderId, List<Long> approvedConsumableIds, List<Long> approvedReplacementIds);
+
+    long countPendingForWarehouse();
 }

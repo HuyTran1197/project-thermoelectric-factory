@@ -18,7 +18,7 @@ public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
     List<WorkOrder> getWorkOrdersByMaterialStatus(MaterialStatus materialStatus);
 
     long countByMaterialStatus(MaterialStatus materialStatus);
-}
+
     boolean existsByRequestId(Long repairOrderId);
 
     boolean existsByCode(String code);
@@ -56,3 +56,14 @@ public interface IWorkOrderRepository extends JpaRepository<WorkOrder,Long> {
             @Param("searchEquipment") String equipment,
             @Param("searchStatus") String status,
             Pageable pageable);
+    @Query("""
+    SELECT COUNT(w)
+    FROM WorkOrder w
+    WHERE YEAR(w.startDate) = :year
+""")
+    long countByYear(
+            @Param("year")
+            int year
+    );
+
+}

@@ -143,7 +143,9 @@ public class SecurityConfig {
                         // QUẢN ĐỐC SỬA CHỮA / TỔ TRƯỞNG
                         // ==========================
                         .requestMatchers(
-                                "/api/material-export/supply-slip"
+                                "/api/material-export/supply-slip",
+                                "/api/material-export/request-material",
+                                "/api/material-export/request-list"
                         )
                         .hasAnyAuthority(
                                 "ROLE_QUẢN ĐỐC SỬA CHỮA",
@@ -158,6 +160,7 @@ public class SecurityConfig {
                                 "/api/material-export/approve/**",
                                 "/api/material-export/pending-list",
                                 "/api/material-export/pending-count"
+
                         )
                         .hasAnyAuthority(
                                 "ROLE_THỦ KHO VẬT TƯ",
