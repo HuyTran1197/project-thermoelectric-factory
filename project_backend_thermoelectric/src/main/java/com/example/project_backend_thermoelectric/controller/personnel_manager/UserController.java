@@ -23,7 +23,7 @@ public class UserController {
     public Page<UserDto> searchUsers(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         return userService.searchUsers(keyword, page, size);
     }

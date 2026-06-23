@@ -190,6 +190,18 @@ public class SecurityConfig {
                         )
 
                         // ==========================
+                        // LỊCH SỬ SỬA CHỮA
+                        // ==========================
+                        .requestMatchers(
+                                "/api/maintenance-logs/**"
+                        )
+                        .hasAnyAuthority(
+                                "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                                "ROLE_TỔ TRƯỞNG",
+                                "ROLE_ADMIN"
+                        )
+
+                        // ==========================
                         // CÒN LẠI PHẢI LOGIN
                         // ==========================
                         .anyRequest()

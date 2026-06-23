@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface IWorkOrderRepository
         extends JpaRepository<WorkOrder, Long> {
 
@@ -59,4 +62,7 @@ public interface IWorkOrderRepository
             @Param("year")
             int year
     );
+
+    Optional<WorkOrder> findByCode(String code);
+    List<WorkOrder> findAllByOrderByCodeAsc();
 }

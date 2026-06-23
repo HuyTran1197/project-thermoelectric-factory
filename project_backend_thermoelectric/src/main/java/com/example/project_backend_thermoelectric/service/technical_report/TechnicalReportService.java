@@ -2,16 +2,14 @@ package com.example.project_backend_thermoelectric.service.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.CreateTechnicalReportDto;
 import com.example.project_backend_thermoelectric.dto.technical_report.EquipmentReportDto;
-import com.example.project_backend_thermoelectric.dto.technical_report.ReplacementDto;
-import com.example.project_backend_thermoelectric.entity.ReplacementMaterial;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
-import com.example.project_backend_thermoelectric.entity.User;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.repository.materials_manager.IReplacementMaterialRepository;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.technical_report.ITechnicalReportRepo;
-import com.example.project_backend_thermoelectric.repository.technical_report.IWorkOrderRepo;
+//import com.example.project_backend_thermoelectric.repository.technical_report.IWorkOrderRepo;
+import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ public class TechnicalReportService implements ITechnicalReportService {
     private ITechnicalReportRepo technicalReportRepository;
 
     @Autowired
-    private IWorkOrderRepo workOrderRepository;
+    private IWorkOrderRepository workOrderRepository;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -45,7 +43,9 @@ public class TechnicalReportService implements ITechnicalReportService {
     @Override
     @Transactional
     public TechnicalReport createTechnicalReport(CreateTechnicalReportDto dto) {
-        WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
+//        WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
+//                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
+        WorkOrder workOrder = workOrderRepository.findByCode(dto.getWorkOrderCode())
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
 //        User user = userRepo.findById(dto.getCreatedBy())
@@ -86,7 +86,9 @@ public class TechnicalReportService implements ITechnicalReportService {
         TechnicalReport existing = technicalReportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biên bản không tồn tại"));
 
-        WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
+//        WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
+//                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
+        WorkOrder workOrder = workOrderRepository.findByCode(dto.getWorkOrderCode())
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
         existing.setWorkOrder(workOrder);
