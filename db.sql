@@ -465,3 +465,12 @@ ALTER TABLE work_orders DROP FOREIGN KEY FK734xdi12pbbon5yox0svek4xo;
 -- 2. Xoá luôn cột (vì cũng không dùng đến)
 ALTER TABLE work_orders DROP COLUMN repair_order_id;
 
+-- tắt safe mode để update status
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE equipments SET status = 'DANG_VAN_HANH' WHERE status = 'Đang vận hành';
+UPDATE equipments SET status = 'DANG_SUA_CHUA' WHERE status = 'Đang sửa chửa';
+UPDATE equipments SET status = 'DANG_DONG' WHERE status = 'Đang đóng';
+
+-- bật lại safe mode
+SET SQL_SAFE_UPDATES = 1;
