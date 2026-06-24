@@ -13,6 +13,7 @@ import java.util.List;
 public class EquipmentReportDto {
     private Long equipmentId;
     private String equipmentName;
+    private String equipmentCode;
     private String damageDescription;  // Mô tả hư hỏng
     private String assessment;         // Đánh giá kỹ thuật
     private String proposedSolution;   // Phương án xử lý
