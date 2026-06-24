@@ -2,6 +2,8 @@ package com.example.project_backend_thermoelectric.controller.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.CreateTechnicalReportDto;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
+import com.example.project_backend_thermoelectric.entity.WorkOrder;
+import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
 import com.example.project_backend_thermoelectric.service.technical_report.ITechnicalReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,9 @@ public class TechnicalReportController {
 
     @Autowired
     private ITechnicalReportService service;
+
+    @Autowired
+    private IWorkOrderRepository workOrderRepository;
     // 1. Thêm biên bản
     @PostMapping
     public ResponseEntity<TechnicalReport> create(@RequestBody CreateTechnicalReportDto dto) {
@@ -69,5 +74,24 @@ public class TechnicalReportController {
 
         Page<TechnicalReport> result = service.searchTechnicalReports(keyword, workOrderId, pageable);
         return ResponseEntity.ok(result);
+    }
+
+    // 7. NEW: GET WORK ORDER LIST (FOR DROPDOWN)
+    // =========================
+    @GetMapping("/work-orders")
+    public ResponseEntity<List<WorkOrder>> getWorkOrders() {
+        return ResponseEntity.ok(
+                workOrderRepository.findAllByOrderByCodeAsc()
+        );
+    }
+
+    // =========================
+    // 8. NEW: FIND WORK ORDER BY CODE (optional helper)
+    // =========================
+    @GetMapping("/work-orders/{code}")
+    public ResponseEntity<WorkOrder> getWorkOrderByCode(@PathVariable String code) {
+        WorkOrder wo = workOrderRepository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
+        return ResponseEntity.ok(wo);
     }
 }

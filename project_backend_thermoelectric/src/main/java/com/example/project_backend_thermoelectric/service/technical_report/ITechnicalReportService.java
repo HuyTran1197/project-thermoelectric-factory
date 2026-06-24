@@ -25,4 +25,6 @@ public interface ITechnicalReportService {
 
     // Phân trang + tìm kiếm (content hoặc workOrderId)
     Page<TechnicalReport> searchTechnicalReports(String keyword, Long workOrderId, Pageable pageable);
+
+//    TechnicalReportDto mapToDto(TechnicalReport report);
 }

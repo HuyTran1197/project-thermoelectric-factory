@@ -67,4 +67,7 @@ public interface IWorkOrderRepository
             @Param("year")
             int year
     );
+
+    Optional<WorkOrder> findByCode(String code);
+    List<WorkOrder> findAllByOrderByCodeAsc();
 }
