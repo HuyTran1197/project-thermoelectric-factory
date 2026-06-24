@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class WorkOrderCompletionService {
@@ -31,38 +33,22 @@ public class WorkOrderCompletionService {
     @Transactional
     public void closeWorkOrder(Long workOrderId) {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu công tác"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay Work Order"));
 
         if (workOrder.getStatus() != WorkOrderStatus.HOAN_THANH) {
-            throw new RuntimeException("Chỉ được đóng phiếu công tác khi ở trạng thái HOAN_THANH");
+            throw new RuntimeException("Chi duoc dong phieu khi Work Order o trang thai HOAN_THANH");
         }
 
         RepairOrder repairOrder = workOrder.getRequest();
 
-        // ✅ Chặn đóng lần 2
         if (repairOrder.getStatus() == RepairOrderStatus.DA_HOAN_THANH) {
-            throw new RuntimeException("Phiếu này đóng trước đó");
+            throw new RuntimeException("Phieu nay da duoc dong truoc do");
         }
+
+        workOrder.setEndDate(LocalDateTime.now()); // ✅ ghi endDate lúc đóng phiếu
+        workOrderRepository.save(workOrder);
 
         repairOrder.setStatus(RepairOrderStatus.DA_HOAN_THANH);
         repairOrderRepository.save(repairOrder);
     }
-//    @Transactional
-//    public void closeWorkOrder(Long workOrderId) {
-//        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
-//                .orElseThrow(() -> new RuntimeException("Khong tim thay Work Order"));
-//
-//        if (workOrder.getStatus() != WorkOrderStatus.HOAN_THANH) {
-//            throw new RuntimeException("Chi duoc dong phieu khi Work Order o trang thai HOAN_THANH");
-//        }
-//
-//        RepairOrder repairOrder = workOrder.getRequest();
-//
-//        if (repairOrder.getStatus() != RepairOrderStatus.CHO_NGHIEM_THU) {
-//            throw new RuntimeException("Chi duoc dong phieu khi Repair Order o trang thai CHO_NGHIEM_THU");
-//        }
-//
-//        repairOrder.setStatus(RepairOrderStatus.DA_HOAN_THANH);
-//        repairOrderRepository.save(repairOrder);
-//    }
 }

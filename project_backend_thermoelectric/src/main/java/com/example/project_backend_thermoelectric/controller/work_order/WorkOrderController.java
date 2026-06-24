@@ -100,7 +100,7 @@ public class WorkOrderController {
             @PathVariable Long id
     ) {
         workOrderService.complete(id);
-        return ResponseEntity.ok("Hoan thanh Work Order thanh cong");
+        return ResponseEntity.ok("Hoàn thành phiếu công tác thành công");
     }
 
     @GetMapping("/{id}")
