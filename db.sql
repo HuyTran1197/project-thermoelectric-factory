@@ -457,5 +457,11 @@ ALTER TABLE work_orders DROP FOREIGN KEY work_orders_ibfk_1;
 ALTER TABLE work_orders
 ADD CONSTRAINT work_orders_ibfk_1
 FOREIGN KEY (request_id) REFERENCES repair_order(id);
+SHOW CREATE TABLE work_orders;
 
-SHOW CREATE TABLE work_order_assignments;
+-- 1. Xoá foreign key constraint trên cột này trước
+ALTER TABLE work_orders DROP FOREIGN KEY FK734xdi12pbbon5yox0svek4xo;
+
+-- 2. Xoá luôn cột (vì cũng không dùng đến)
+ALTER TABLE work_orders DROP COLUMN repair_order_id;
+
