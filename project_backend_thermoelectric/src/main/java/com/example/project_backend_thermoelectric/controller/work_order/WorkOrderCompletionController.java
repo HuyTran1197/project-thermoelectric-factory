@@ -33,6 +33,6 @@ public class WorkOrderCompletionController {
             @PathVariable Long id
     ) {
         service.closeWorkOrder(id);
-        return ResponseEntity.ok("Dong phieu thanh cong");
+        return ResponseEntity.ok("Đóng phiếu thành công");
     }
 }

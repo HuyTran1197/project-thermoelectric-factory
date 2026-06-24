@@ -1,8 +1,9 @@
 package com.example.project_backend_thermoelectric.entity;
 
-
+import com.example.project_backend_thermoelectric.enums.EquipmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,17 +35,14 @@ public class Equipment {
     private String code;
 
     @ManyToOne
-    @JoinColumn(name = "system_id",nullable = false)
+    @JoinColumn(name = "system_id", nullable = false)
     private SystemEntity system;
 
     @ManyToOne
-    @JoinColumn(name = "type_id",nullable = false)
+    @JoinColumn(name = "type_id", nullable = false)
     private EquipmentType type;
 
-    @NotBlank(message = "Không được bỏ trống")
-    @Pattern(regexp = "^\\p{Lu}\\p{L}+(\\s\\p{L}+)*$",
-            message = "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
-    )
-    private String status;
-
+    @NotNull(message = "Không được bỏ trống")
+    @Enumerated(EnumType.STRING)
+    private EquipmentStatus status;
 }
