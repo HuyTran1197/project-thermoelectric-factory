@@ -11,7 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateTechnicalReportDto {
-    private Long workOrderId;
+        private Long workOrderId;
+    private String workOrderCode;
     private Long createdBy;
     private List<EquipmentReportDto> equipmentReports;
     private String conclusion; // Kết luận chung của biên bản

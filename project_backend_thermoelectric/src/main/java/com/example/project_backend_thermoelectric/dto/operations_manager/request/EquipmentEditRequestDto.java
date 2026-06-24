@@ -1,5 +1,6 @@
 package com.example.project_backend_thermoelectric.dto.operations_manager.request;
 
+import com.example.project_backend_thermoelectric.enums.EquipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class EquipmentEditRequestDto {
     private Long id;
-
     private String name;
     private String code;
     private Long systemId;
     private Long typeId;
-    private String status;
+    private EquipmentStatus status;
     private List<EquipmentParameterEditDto> parameters;
 }

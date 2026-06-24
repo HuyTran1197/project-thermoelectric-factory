@@ -95,14 +95,6 @@ public class WorkOrderController {
         );
     }
 
-    @PutMapping("/{id}/complete")
-    public ResponseEntity<?> complete(
-            @PathVariable Long id
-    ) {
-        workOrderService.complete(id);
-        return ResponseEntity.ok("Hoàn thành phiếu công tác thành công");
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> detail(
             @PathVariable Long id
