@@ -19,6 +19,7 @@ import java.util.List;
 public class MaintenanceLogController {
     private final IMaintenanceLogService service;
 
+    // CREATE
     @PostMapping
     public ResponseEntity<MaintenanceLogDto> create(
             @RequestBody CreateMaintenanceLogDto dto
@@ -26,19 +27,7 @@ public class MaintenanceLogController {
         return ResponseEntity.ok(service.create(dto));
     }
 
-    @GetMapping("/work-order/{id}")
-    public ResponseEntity<List<MaintenanceLogDto>> getByWorkOrder(
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(service.getByWorkOrderId(id));
-    }
-
-    @GetMapping("/equipment/{id}")
-    public ResponseEntity<List<MaintenanceLogDto>> getByEquipment(
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(service.getByEquipmentId(id));
-    }
+    // SEARCH + PAGINATION
     @GetMapping
     public ResponseEntity<Page<MaintenanceLogDto>> search(
             @RequestParam(defaultValue = "0") int page,
