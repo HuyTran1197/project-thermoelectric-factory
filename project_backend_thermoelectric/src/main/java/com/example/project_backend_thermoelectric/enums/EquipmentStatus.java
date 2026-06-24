@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum WorkOrderStatus {
+public enum EquipmentStatus {
 
-    DA_PHAN_CONG("Đã phân công"),
-    DANG_THUC_HIEN("Đang thực hiện"),
-    CHO_VAT_TU("Chờ vật tư"),
-    HOAN_THANH("Hoàn thành");
+    DANG_VAN_HANH("Đang vận hành"),
+    DANG_SUA_CHUA("Đang sửa chữa"),
+    DANG_DONG("Đang đóng");
 
     private final String displayName;
 }

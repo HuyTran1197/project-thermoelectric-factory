@@ -8,4 +8,5 @@ public interface EquipmentDto {
     Long getTypeId();
     String getType();
     String getStatus();
+    String getStatusDisplay();
 }

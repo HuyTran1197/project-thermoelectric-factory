@@ -19,6 +19,7 @@ public interface IWorkOrderService {
             Long workOrderId,
             AssignWorkOrderDto dto
     );
+
     WorkOrderDetailDto detail(Long id);
 
     Page<RepairOrderForWorkOrderDto> searchForWorkOrder(@Param("searchTitle") String title,

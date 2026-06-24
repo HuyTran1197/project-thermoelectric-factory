@@ -9,6 +9,8 @@ import com.example.project_backend_thermoelectric.repository.personnel_manager.I
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,12 +36,25 @@ public class ReplacementTransactionService implements IReplacementTransactionSer
 
     @Override
     public ReplacementTransaction importReplacement(ReplacementTransaction replacementTransaction) {
+        // set time
         replacementTransaction.setCreatedAt(LocalDateTime.now());
+        //Lấy thông tin phiên đăng nhập hiện tại từ Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //check
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Bạn chưa đăng nhập hoặc phiên làm việc đã hết hạn!");
+        }
 
-        User user = userRepo.findById(1L).orElseThrow();
+        // Lấy username của người đang đăng nhập
+        String currentUsername = authentication.getName();
 
-        replacementTransaction.setCreatedBy(user);
-        return replacementTransactionRepository.save(replacementTransaction);
+        //Truy vấn User từ database dựa vào username
+        User currentUser = userRepo.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin tài khoản: " + currentUsername));
+        //Gán user đang đăng nhập vào transaction
+        replacementTransaction.setCreatedBy(currentUser);
+
+        return replacementTransactionRepository.save( replacementTransaction);
     }
 
     @Override

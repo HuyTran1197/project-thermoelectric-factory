@@ -2,13 +2,17 @@ package com.example.project_backend_thermoelectric.service.materials_manager;
 
 import com.example.project_backend_thermoelectric.dto.materials_manager.FullMaterialExportDto;
 import com.example.project_backend_thermoelectric.entity.*;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import com.example.project_backend_thermoelectric.enums.TransactionType;
 import com.example.project_backend_thermoelectric.repository.materials_manager.*;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderConsumableRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderReplacementRepository;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
+import com.example.project_backend_thermoelectric.enums.WorkOrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,16 +50,25 @@ public class MaterialExportService implements IMaterialExportService {
     @Transactional
     public void exportMaterialToWorkOrder(FullMaterialExportDto exportDTO) {
 
-        // 1. Tìm phiếu sửa chữa (WorkOrder) cha xem có tồn tại không
         WorkOrder workOrder = workOrderRepository.findById(exportDTO.getWorkOrderId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + exportDTO.getWorkOrderId()));
 
-        // 🔥 CHẶN KHÔNG CHO QUẢN ĐỐC CẤP TRÙNG NẾU PHIẾU ĐÃ GỬI ĐI RỒI
-        if (workOrder.getMaterialStatus() != null && !"NOT_REQUESTED".equals(workOrder.getMaterialStatus())) {
-            throw new RuntimeException("❌ Phiếu sửa chữa này đã được gửi yêu cầu cấp vật tư trước đó!");
+        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+            throw new RuntimeException("Phiếu công tác đã hoàn thành, không thể yêu cầu cấp vật tư");
         }
 
-        // 2. Xử lý lưu danh sách VẬT TƯ TIÊU HAO được yêu cầu
+        MaterialStatus currentStatus = workOrder.getMaterialStatus();
+        if (currentStatus == MaterialStatus.DA_CAP_PHAT) {
+            throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể chỉnh sửa!");
+        }
+
+        if (currentStatus == MaterialStatus.CHO_CAP_PHAT) {
+            workOrderConsumableRepository.deleteByWorkOrder(workOrder);
+            workOrderConsumableRepository.flush();
+
+            workOrderReplacementRepository.deleteByWorkOrder(workOrder);
+            workOrderReplacementRepository.flush();
+        }
         if (exportDTO.getConsumables() != null && !exportDTO.getConsumables().isEmpty()) {
             for (FullMaterialExportDto.MaterialItem item : exportDTO.getConsumables()) {
                 ConsumableMaterial material = consumableMaterialRepository.findById(item.getMaterialId())
@@ -70,7 +83,6 @@ public class MaterialExportService implements IMaterialExportService {
             }
         }
 
-        // 3. Xử lý lưu danh sách PHỤ TÙNG THAY THẾ được yêu cầu
         if (exportDTO.getReplacements() != null && !exportDTO.getReplacements().isEmpty()) {
             for (FullMaterialExportDto.MaterialItem item : exportDTO.getReplacements()) {
                 ReplacementMaterial material = replacementMaterialRepository.findById(item.getMaterialId())
@@ -85,88 +97,136 @@ public class MaterialExportService implements IMaterialExportService {
             }
         }
 
-        // =================================================================
-        // ĐOẠN CODE CÒN THIẾU CỦA QUẢN ĐỐC: CẬP NHẬT TRẠNG THÁI PHIẾU MẸ
-        // =================================================================
-        // Chuyển trạng thái sang "Chờ thủ kho duyệt" để kích hoạt isReadOnly ở Frontend
-        workOrder.setMaterialStatus("PENDING_RELEASE");
-        workOrderRepository.save(workOrder); // Ghi nhận thay đổi xuống DB
+        workOrder.setMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        workOrder.setStatus(WorkOrderStatus.CHO_VAT_TU);
+        workOrderRepository.save(workOrder);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void approveAndReleaseMaterials(Long workOrderId, Long warehouseStaffId) {
-
-        // 1. Kiểm tra thông tin Thủ kho
-        User staff = userRepository.findById(warehouseStaffId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin Thủ kho ID: " + warehouseStaffId));
-
-        // 2. Tìm phiếu sửa chữa (WorkOrder) cha
+    public void approveAndReleaseMaterials(Long workOrderId) {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
-        // 🔥 CHẶN KHÔNG CHO THỦ KHO XUẤT PHIẾU NÀY LẦN NỮA NẾU ĐÃ RELEASED
-        if ("RELEASED".equals(workOrder.getMaterialStatus())) {
-            throw new RuntimeException("❌ Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể xuất lại!");
+        if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
+            throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể xuất lại!");
         }
 
-        // =================================================================
-        // PHẦN 1: KIỂM TRA & XUẤT KHO VẬT TƯ TIÊU HAO
-        // =================================================================
-        List<WorkOrderConsumable> requestedConsumables = workOrderConsumableRepository.findByWorkOrder(workOrder);
+        List<Long> allConsumableIds = workOrderConsumableRepository.findByWorkOrder(workOrder)
+                .stream().filter(req -> !req.isReleased()).map(req -> req.getMaterial().getId()).toList();
+
+        List<Long> allReplacementIds = workOrderReplacementRepository.findByWorkOrder(workOrder)
+                .stream().filter(req -> !req.isReleased()).map(req -> req.getMaterial().getId()).toList();
+
+        this.approveSpecificMaterials(workOrderId, allConsumableIds, allReplacementIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void approveSpecificMaterials(Long workOrderId,
+                                         List<Long> approvedConsumableIds,
+                                         List<Long> approvedReplacementIds) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Bạn chưa đăng nhập hoặc phiên làm việc đã hết hạn!");
+        }
+
+        String currentUsername = authentication.getName();
+        User staff = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin tài khoản: " + currentUsername));
+
+        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
+
+        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+            throw new RuntimeException("Phiếu công tác đã hoàn thành, không thể cấp phát vật tư");
+        }
+
+        if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
+            throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho hoàn tất!");
+        }
+
+        List<WorkOrderConsumable> requestedConsumables =
+                workOrderConsumableRepository.findByWorkOrder(workOrder);
 
         for (WorkOrderConsumable req : requestedConsumables) {
-            ConsumableMaterial material = req.getMaterial();
-            int qtyToExport = req.getQuantity();
+            Long materialId = req.getMaterial().getId();
 
-            int currentStock = consumableTxRepository.getStockQuantity(material.getId());
+            if (approvedConsumableIds != null && approvedConsumableIds.contains(materialId)) {
 
-            if (currentStock < qtyToExport) {
-                throw new RuntimeException("Kho không đủ số lượng cho vật tư tiêu hao: " + material.getName()
-                        + " (Hiện tồn: " + currentStock + ", Quản đốc yêu cầu: " + qtyToExport + ")");
+                if (req.isReleased()) continue;
+
+
+                ConsumableMaterial material = req.getMaterial();
+                int qtyToExport = req.getQuantity();
+                int currentStock = consumableTxRepository.getStockQuantity(material.getId());
+
+                if (currentStock < qtyToExport) {
+                    throw new RuntimeException("Kho không đủ số lượng cho vật tư tiêu hao: "
+                            + material.getName()
+                            + " (Hiện tồn: " + currentStock + ", Yêu cầu: " + qtyToExport + ")");
+                }
+
+                ConsumableTransaction tx = new ConsumableTransaction();
+                tx.setMaterial(material);
+                tx.setType(TransactionType.EXPORT);
+                tx.setQuantity(qtyToExport);
+                tx.setCreatedBy(staff);
+                tx.setCreatedAt(LocalDateTime.now());
+                consumableTxRepository.save(tx);
+
+                req.setReleased(true); // 🆕
+                workOrderConsumableRepository.save(req);
             }
-
-            ConsumableTransaction tx = new ConsumableTransaction();
-            tx.setMaterial(material);
-            tx.setType(TransactionType.EXPORT);
-            tx.setQuantity(qtyToExport);
-            tx.setCreatedBy(staff);
-            tx.setCreatedAt(LocalDateTime.now());
-
-            consumableTxRepository.save(tx);
         }
 
-        // =================================================================
-        // PHẦN 2: KIỂM TRA & XUẤT KHO PHỤ TÙNG THAY THẾ
-        // =================================================================
-        List<WorkOrderReplacement> requestedReplacements = workOrderReplacementRepository.findByWorkOrder(workOrder);
+        List<WorkOrderReplacement> requestedReplacements =
+                workOrderReplacementRepository.findByWorkOrder(workOrder);
 
         for (WorkOrderReplacement req : requestedReplacements) {
-            ReplacementMaterial material = req.getMaterial();
-            int qtyToExport = req.getQuantity();
+            Long materialId = req.getMaterial().getId();
 
-            int currentStock = replacementTxRepository.getStockQuantity(material.getId());
+            if (approvedReplacementIds != null && approvedReplacementIds.contains(materialId)) {
 
-            if (currentStock < qtyToExport) {
-                throw new RuntimeException("Kho không đủ số lượng cho phụ tùng thay thế: " + material.getName()
-                        + " (Hiện tồn: " + currentStock + ", Quản đốc yêu cầu: " + qtyToExport + ")");
+                if (req.isReleased()) continue; // 🆕 Đã cấp rồi thì bỏ qua
+
+                ReplacementMaterial material = req.getMaterial();
+                int qtyToExport = req.getQuantity();
+                int currentStock = replacementTxRepository.getStockQuantity(material.getId());
+
+                if (currentStock < qtyToExport) {
+                    throw new RuntimeException("Kho không đủ số lượng cho phụ tùng thay thế: "
+                            + material.getName()
+                            + " (Hiện tồn: " + currentStock + ", Yêu cầu: " + qtyToExport + ")");
+                }
+
+                ReplacementTransaction tx = new ReplacementTransaction();
+                tx.setMaterial(material);
+                tx.setType(TransactionType.EXPORT);
+                tx.setQuantity(qtyToExport);
+                tx.setCreatedBy(staff);
+                tx.setCreatedAt(LocalDateTime.now());
+                replacementTxRepository.save(tx);
+
+                req.setReleased(true); //
+                workOrderReplacementRepository.save(req);
             }
-
-            ReplacementTransaction tx = new ReplacementTransaction();
-            tx.setMaterial(material);
-            tx.setType(TransactionType.EXPORT);
-            tx.setQuantity(qtyToExport);
-            tx.setCreatedBy(staff);
-            tx.setCreatedAt(LocalDateTime.now());
-
-            replacementTxRepository.save(tx);
         }
 
-        // =================================================================
-        // ĐOẠN CODE CÒN THIẾU CỦA THỦ KHO: CẬP NHẬT TRẠNG THÁI PHIẾU MẸ
-        // =================================================================
-        // Đánh dấu chính thức xuất kho hoàn tất để khóa vĩnh viễn quy trình cấp phát
-        workOrder.setMaterialStatus("RELEASED");
-        workOrderRepository.save(workOrder);
+        boolean allDone = workOrderConsumableRepository.findByWorkOrder(workOrder)
+                .stream().allMatch(WorkOrderConsumable::isReleased)
+                && workOrderReplacementRepository.findByWorkOrder(workOrder)
+                .stream().allMatch(WorkOrderReplacement::isReleased);
+
+        if (allDone) {
+            workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
+            workOrder.setStatus(WorkOrderStatus.DANG_THUC_HIEN);
+            workOrderRepository.save(workOrder);
+        }
+    }
+    @Override
+    public long countPendingForWarehouse() {
+        return workOrderRepository.countByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
     }
 }

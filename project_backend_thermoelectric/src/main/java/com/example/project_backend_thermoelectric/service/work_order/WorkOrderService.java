@@ -2,7 +2,10 @@ package com.example.project_backend_thermoelectric.service.work_order;
 
 import com.example.project_backend_thermoelectric.dto.work_orders.*;
 import com.example.project_backend_thermoelectric.entity.*;
+import com.example.project_backend_thermoelectric.enums.EquipmentStatus;
+import com.example.project_backend_thermoelectric.enums.MaterialStatus;
 import com.example.project_backend_thermoelectric.enums.WorkOrderStatus;
+import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IEmployeeRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.repair_order.IRepairOrderRepository;
@@ -34,6 +37,7 @@ public class WorkOrderService implements IWorkOrderService {
     private final IUserRepo userRepo;
     private final IEmployeeRepo employeeRepo;
     private final IWorkOrderAssignmentRepo assignmentRepo;
+    private final IEquipmentRepo equipmentRepo;
 
     private String generateCode() {
         LocalDate now = LocalDate.now();
@@ -106,14 +110,17 @@ public class WorkOrderService implements IWorkOrderService {
         workOrder.setRequest(repairOrder);
         workOrder.setCreatedBy(currentUser);
 
-        workOrder.setStatus(WorkOrderStatus.MOI_TAO);
+        workOrder.setStatus(WorkOrderStatus.DA_PHAN_CONG);
 
-        workOrder.setMaterialStatus("Chưa yêu cầu cấp phát");
+        workOrder.setMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
 
         workOrder.setStartDate(LocalDateTime.now());
         repairOrder.setStatus(RepairOrderStatus.DANG_THUC_HIEN);
 
         repairOrderRepository.save(repairOrder);
+        Equipment equipment = repairOrder.getEquipment();
+        equipment.setStatus(EquipmentStatus.DANG_SUA_CHUA);
+        equipmentRepo.save(equipment);
         WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
 
         saveAssignments(savedWorkOrder, dto.getAssignments());
@@ -157,7 +164,7 @@ public class WorkOrderService implements IWorkOrderService {
         dto.setId(workOrder.getId());
         dto.setCode(workOrder.getCode());
         dto.setStatus(workOrder.getStatus().getDisplayName());
-        dto.setMaterialStatus(workOrder.getMaterialStatus());
+        dto.setMaterialStatus(workOrder.getMaterialStatus().getDisplayName());
         dto.setStartDate(workOrder.getStartDate());
         dto.setEndDate(workOrder.getEndDate());
 
