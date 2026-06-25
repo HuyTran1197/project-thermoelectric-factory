@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/work-orders")
 @RequiredArgsConstructor
@@ -21,6 +23,11 @@ import org.springframework.web.bind.annotation.*;
 public class WorkOrderController {
 
     private final IWorkOrderService workOrderService;
+
+    @GetMapping("/list")
+    public ResponseEntity<List<WorkOrder>> getList(){
+        return ResponseEntity.ok(workOrderService.getList());
+    }
 
     @GetMapping
     public ResponseEntity<Page<WorkOrderResponseDto>> search(
