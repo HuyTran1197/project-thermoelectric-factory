@@ -10,7 +10,5 @@ import lombok.*;
 public class CreateMaintenanceLogDto {
     private Long workOrderId;
 
-    private Long equipmentId;
-
     private String description;
 }

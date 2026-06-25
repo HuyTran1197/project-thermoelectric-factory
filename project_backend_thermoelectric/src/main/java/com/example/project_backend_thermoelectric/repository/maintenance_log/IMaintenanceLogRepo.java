@@ -11,17 +11,13 @@ import java.util.List;
 
 public interface IMaintenanceLogRepo extends JpaRepository<MaintenanceLog,Long> {
     @Query("""
-        SELECT m
-        FROM MaintenanceLog m
+        SELECT m FROM MaintenanceLog m
         JOIN m.equipment e
-        WHERE (:equipmentName IS NULL OR :equipmentName = '' OR LOWER(e.name) LIKE LOWER(CONCAT('%', :equipmentName, '%')))
+        WHERE (:equipmentName IS NULL OR :equipmentName = ''
+               OR LOWER(e.name) LIKE LOWER(CONCAT('%', :equipmentName, '%')))
     """)
-    Page<MaintenanceLog> searchByEquipmentName(
+    Page<MaintenanceLog> search(
             @Param("equipmentName") String equipmentName,
             Pageable pageable
     );
-
-    List<MaintenanceLog> findByWorkOrderId(Long workOrderId);
-
-    List<MaintenanceLog> findByEquipmentId(Long equipmentId);
 }

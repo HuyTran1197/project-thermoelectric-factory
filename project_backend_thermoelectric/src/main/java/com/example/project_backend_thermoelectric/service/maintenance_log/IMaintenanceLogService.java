@@ -10,8 +10,5 @@ import java.util.List;
 public interface IMaintenanceLogService {
     MaintenanceLogDto create(CreateMaintenanceLogDto dto);
 
-    List<MaintenanceLogDto> getByWorkOrderId(Long workOrderId);
-
-    List<MaintenanceLogDto> getByEquipmentId(Long equipmentId);
     Page<MaintenanceLogDto> search(String equipmentName, Pageable pageable);
 }

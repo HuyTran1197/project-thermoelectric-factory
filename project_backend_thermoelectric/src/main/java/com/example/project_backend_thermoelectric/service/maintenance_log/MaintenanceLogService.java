@@ -23,7 +23,6 @@ import java.util.List;
 public class MaintenanceLogService implements IMaintenanceLogService {
     private final IMaintenanceLogRepo repository;
     private final IWorkOrderRepository workOrderRepository;
-    private final IEquipmentRepo equipmentRepository;
 
     @Override
     public MaintenanceLogDto create(CreateMaintenanceLogDto dto) {
@@ -31,45 +30,26 @@ public class MaintenanceLogService implements IMaintenanceLogService {
         WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
-        Equipment equipment = equipmentRepository.findById(dto.getEquipmentId())
-                .orElseThrow(() -> new RuntimeException("Equipment không tồn tại"));
+        // AUTO lấy equipment từ WorkOrder
+        Equipment equipment = workOrder.getRequest().getEquipment();
 
         MaintenanceLog log = new MaintenanceLog();
-
         log.setWorkOrder(workOrder);
         log.setEquipment(equipment);
         log.setDescription(dto.getDescription());
         log.setDate(LocalDateTime.now());
 
-        MaintenanceLog saved = repository.save(log);
-
-        return mapToDto(saved);
-    }
-
-    @Override
-    public List<MaintenanceLogDto> getByWorkOrderId(Long workOrderId) {
-        return repository.findByWorkOrderId(workOrderId)
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-    }
-
-    @Override
-    public List<MaintenanceLogDto> getByEquipmentId(Long equipmentId) {
-        return repository.findByEquipmentId(equipmentId)
-                .stream()
-                .map(this::mapToDto)
-                .toList();
+        return map(repository.save(log));
     }
 
     @Override
     public Page<MaintenanceLogDto> search(String equipmentName, Pageable pageable) {
 
-        return repository.searchByEquipmentName(equipmentName, pageable)
-                .map(this::mapToDto);
+        return repository.search(equipmentName, pageable)
+                .map(this::map);
     }
 
-    private MaintenanceLogDto mapToDto(MaintenanceLog log) {
+    private MaintenanceLogDto map(MaintenanceLog log) {
 
         MaintenanceLogDto dto = new MaintenanceLogDto();
 
@@ -83,7 +63,6 @@ public class MaintenanceLogService implements IMaintenanceLogService {
         dto.setEquipmentCode(log.getEquipment().getCode());
 
         dto.setDescription(log.getDescription());
-
         dto.setDate(log.getDate());
 
         return dto;
