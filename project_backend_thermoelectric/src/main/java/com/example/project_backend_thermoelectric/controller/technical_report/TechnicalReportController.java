@@ -71,7 +71,7 @@ public class TechnicalReportController {
                 Sort.by(sort).descending() : Sort.by(sort).ascending();
         Pageable pageable = PageRequest.of(page, 5, sortObj);
 
-        Page<TechnicalReportResponseDto> result = service.search(workOrderCode,pageable);
+        Page<TechnicalReportResponseDto> result = service.search(workOrderCode, pageable);
         return ResponseEntity.ok(result);
     }
 

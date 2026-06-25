@@ -4,6 +4,7 @@ import com.example.project_backend_thermoelectric.dto.work_orders.AssignWorkOrde
 import com.example.project_backend_thermoelectric.dto.work_orders.CreateWorkOrderDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.CreateWorkOrderResponseDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.WorkOrderResponseDto;
+import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.service.work_order.IWorkOrderService;
 import lombok.RequiredArgsConstructor;

@@ -46,7 +46,7 @@ public class TechnicalReportService implements ITechnicalReportService {
     @Transactional
     public TechnicalReport createTechnicalReport(CreateTechnicalReportDto dto) {
         WorkOrder workOrder = workOrderRepository.findByCode(dto.getWorkOrderCode())
-                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Phiếu công tác không tồn tại"));
 
         String username =
                 SecurityContextHolder
@@ -92,10 +92,12 @@ public class TechnicalReportService implements ITechnicalReportService {
     public TechnicalReport updateTechnicalReport(Long id, CreateTechnicalReportDto dto) {
         TechnicalReport existing = technicalReportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biên bản không tồn tại"));
+
         WorkOrder workOrder = workOrderRepository.findByCode(dto.getWorkOrderCode())
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
         existing.setWorkOrder(workOrder);
+
         try {
             String contentJson = objectMapper.writeValueAsString(dto);
             existing.setContent(contentJson);
@@ -130,12 +132,11 @@ public class TechnicalReportService implements ITechnicalReportService {
 
         return technicalReportRepository.findByWorkOrder(workOrder);
     }
+
     // Tìm kiếm + phân trang
     @Override
     public Page<TechnicalReportResponseDto> search(String workOrderCode, Pageable pageable) {
-        return technicalReportRepository.search(workOrderCode, pageable);
+        return technicalReportRepository.search(workOrderCode,pageable);
     }
-
-
 
 }
