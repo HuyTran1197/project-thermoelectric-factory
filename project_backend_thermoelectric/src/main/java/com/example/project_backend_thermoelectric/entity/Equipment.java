@@ -42,7 +42,7 @@ public class Equipment {
     @JoinColumn(name = "type_id", nullable = false)
     private EquipmentType type;
 
-    @NotNull(message = "Không được bỏ trống")
+
     @Enumerated(EnumType.STRING)
     private EquipmentStatus status;
 }

@@ -2,6 +2,7 @@ package com.example.project_backend_thermoelectric.repository.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.TechnicalReportResponseDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.WorkOrderResponseDto;
+import com.example.project_backend_thermoelectric.dto.technical_report.TechnicalReportResponseDto;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ public interface ITechnicalReportRepo extends JpaRepository<TechnicalReport,Long
     List<TechnicalReport> findByWorkOrderAndCreatedById(WorkOrder workOrder, Long createdById);
     // 4. Phân trang tất cả biên bản
     Page<TechnicalReport> findAll(Pageable pageable);
-    // 5. Tìm kiếm theo nội dung JSON (content) hoặc WorkOrder ID
+    // 5. Tìm kiếm theo nội dung JSON (content)
     //    - Pageable để phân trang
     @Query(value = "select tr.id as id,wo.code as workOrderCode, e.code as equipmentCode, e.name as equipmentName, " +
             "tr.created_at as createdAt " +

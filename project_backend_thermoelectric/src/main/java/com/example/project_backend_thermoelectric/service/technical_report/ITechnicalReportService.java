@@ -25,8 +25,7 @@ public interface ITechnicalReportService {
     // Lấy tất cả biên bản theo WorkOrder
     List<TechnicalReport> getTechnicalReportsByWorkOrderId(Long workOrderId);
 
+    // Phân trang + tìm kiếm (content hoặc workOrderId)
     Page<TechnicalReportResponseDto> search(@Param("searchWorkOrderCode") String workOrderCode,
                                             Pageable pageable);
-
-//    TechnicalReportDto mapToDto(TechnicalReport report);
 }

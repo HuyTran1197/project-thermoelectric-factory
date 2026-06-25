@@ -10,7 +10,6 @@ import com.example.project_backend_thermoelectric.repository.materials_manager.I
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
 import com.example.project_backend_thermoelectric.repository.personnel_manager.IUserRepo;
 import com.example.project_backend_thermoelectric.repository.technical_report.ITechnicalReportRepo;
-//import com.example.project_backend_thermoelectric.repository.technical_report.IWorkOrderRepo;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +59,6 @@ public class TechnicalReportService implements ITechnicalReportService {
                                 "Không tìm thấy người dùng"
                         )
                 );
-
         TechnicalReport report = new TechnicalReport();
         report.setWorkOrder(workOrder);
         report.setCreatedBy(currentUser);
@@ -135,6 +133,7 @@ public class TechnicalReportService implements ITechnicalReportService {
         return technicalReportRepository.findByWorkOrder(workOrder);
     }
 
+    // Tìm kiếm + phân trang
     @Override
     public Page<TechnicalReportResponseDto> search(String workOrderCode, Pageable pageable) {
         return technicalReportRepository.search(workOrderCode,pageable);
