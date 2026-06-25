@@ -1,9 +1,11 @@
 package com.example.project_backend_thermoelectric.service.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.CreateTechnicalReportDto;
+import com.example.project_backend_thermoelectric.dto.technical_report.TechnicalReportResponseDto;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -23,8 +25,8 @@ public interface ITechnicalReportService {
     // Lấy tất cả biên bản theo WorkOrder
     List<TechnicalReport> getTechnicalReportsByWorkOrderId(Long workOrderId);
 
-    // Phân trang + tìm kiếm (content hoặc workOrderId)
-    Page<TechnicalReport> searchTechnicalReports(String keyword, Long workOrderId, Pageable pageable);
+    Page<TechnicalReportResponseDto> search(@Param("searchWorkOrderCode") String workOrderCode,
+                                            Pageable pageable);
 
 //    TechnicalReportDto mapToDto(TechnicalReport report);
 }

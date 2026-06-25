@@ -53,6 +53,11 @@ public class WorkOrderService implements IWorkOrderService {
     }
 
     @Override
+    public List<WorkOrder> getList() {
+        return workOrderRepository.findAll();
+    }
+
+    @Override
     public Page<WorkOrderResponseDto> search(String code, String equipment, String status, Pageable pageable) {
         return workOrderRepository.search(code,equipment,status,pageable);
     }

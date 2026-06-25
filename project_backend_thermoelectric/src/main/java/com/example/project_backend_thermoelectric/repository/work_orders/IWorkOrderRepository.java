@@ -16,7 +16,6 @@ import java.util.Optional;
 public interface IWorkOrderRepository
         extends JpaRepository<WorkOrder, Long> {
     List<WorkOrder> getWorkOrdersByMaterialStatus(MaterialStatus materialStatus);
-
     long countByMaterialStatus(MaterialStatus materialStatus);
 
     boolean existsByRequestId(Long repairOrderId);

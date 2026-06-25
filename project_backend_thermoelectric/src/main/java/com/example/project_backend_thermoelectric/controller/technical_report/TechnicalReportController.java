@@ -1,6 +1,7 @@
 package com.example.project_backend_thermoelectric.controller.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.CreateTechnicalReportDto;
+import com.example.project_backend_thermoelectric.dto.technical_report.TechnicalReportResponseDto;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.repository.work_orders.IWorkOrderRepository;
@@ -60,19 +61,17 @@ public class TechnicalReportController {
     }
     // 6. Phân trang + tìm kiếm
     @GetMapping("/search")
-    public ResponseEntity<Page<TechnicalReport>> search(
-            @RequestParam(required = false, defaultValue = "") String keyword,
-            @RequestParam(required = false) Long workOrderId,
+    public ResponseEntity<Page<TechnicalReportResponseDto>> search(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "") String workOrderCode,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction
     ) {
         Sort sortObj = direction.equalsIgnoreCase("desc") ?
                 Sort.by(sort).descending() : Sort.by(sort).ascending();
-        Pageable pageable = PageRequest.of(page, size, sortObj);
+        Pageable pageable = PageRequest.of(page, 5, sortObj);
 
-        Page<TechnicalReport> result = service.searchTechnicalReports(keyword, workOrderId, pageable);
+        Page<TechnicalReportResponseDto> result = service.search(workOrderCode, pageable);
         return ResponseEntity.ok(result);
     }
 

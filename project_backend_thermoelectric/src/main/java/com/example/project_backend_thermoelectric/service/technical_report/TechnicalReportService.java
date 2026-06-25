@@ -2,7 +2,9 @@ package com.example.project_backend_thermoelectric.service.technical_report;
 
 import com.example.project_backend_thermoelectric.dto.technical_report.CreateTechnicalReportDto;
 import com.example.project_backend_thermoelectric.dto.technical_report.EquipmentReportDto;
+import com.example.project_backend_thermoelectric.dto.technical_report.TechnicalReportResponseDto;
 import com.example.project_backend_thermoelectric.entity.TechnicalReport;
+import com.example.project_backend_thermoelectric.entity.User;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.repository.materials_manager.IReplacementMaterialRepository;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentRepo;
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,18 +46,24 @@ public class TechnicalReportService implements ITechnicalReportService {
     @Override
     @Transactional
     public TechnicalReport createTechnicalReport(CreateTechnicalReportDto dto) {
-//        WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
-//                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
         WorkOrder workOrder = workOrderRepository.findByCode(dto.getWorkOrderCode())
-                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Phiếu công tác không tồn tại"));
 
-//        User user = userRepo.findById(dto.getCreatedBy())
-//                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+        User currentUser = userRepo.findByUsername(username)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Không tìm thấy người dùng"
+                        )
+                );
 
         TechnicalReport report = new TechnicalReport();
         report.setWorkOrder(workOrder);
-//        report.setCreatedBy(user);
-        report.setCreatedBy(null);
+        report.setCreatedBy(currentUser);
         report.setCreatedAt(LocalDateTime.now());
 
         // Gán tên thiết bị trong content như trước
@@ -86,18 +95,11 @@ public class TechnicalReportService implements ITechnicalReportService {
         TechnicalReport existing = technicalReportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biên bản không tồn tại"));
 
-//        WorkOrder workOrder = workOrderRepository.findById(dto.getWorkOrderId())
-//                .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
         WorkOrder workOrder = workOrderRepository.findByCode(dto.getWorkOrderCode())
                 .orElseThrow(() -> new RuntimeException("WorkOrder không tồn tại"));
 
         existing.setWorkOrder(workOrder);
-        //up
-//        if (dto.getCreatedBy() != null) {
-//            User user = userRepo.findById(dto.getCreatedBy())
-//                    .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-//            existing.setCreatedBy(user);
-//        }
+
         try {
             String contentJson = objectMapper.writeValueAsString(dto);
             existing.setContent(contentJson);
@@ -133,11 +135,9 @@ public class TechnicalReportService implements ITechnicalReportService {
         return technicalReportRepository.findByWorkOrder(workOrder);
     }
 
-    // Tìm kiếm + phân trang
     @Override
-    public Page<TechnicalReport> searchTechnicalReports(String keyword, Long workOrderId, Pageable pageable) {
-        return technicalReportRepository.findByContentContainingIgnoreCaseOrWorkOrderId(
-                keyword, workOrderId, pageable
-        );
+    public Page<TechnicalReportResponseDto> search(String workOrderCode, Pageable pageable) {
+        return technicalReportRepository.search(workOrderCode,pageable);
     }
+
 }

@@ -4,6 +4,7 @@ import com.example.project_backend_thermoelectric.dto.work_orders.AssignWorkOrde
 import com.example.project_backend_thermoelectric.dto.work_orders.CreateWorkOrderDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.CreateWorkOrderResponseDto;
 import com.example.project_backend_thermoelectric.dto.work_orders.WorkOrderResponseDto;
+import com.example.project_backend_thermoelectric.entity.Equipment;
 import com.example.project_backend_thermoelectric.entity.WorkOrder;
 import com.example.project_backend_thermoelectric.service.work_order.IWorkOrderService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/work-orders")
 @RequiredArgsConstructor
@@ -21,6 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class WorkOrderController {
 
     private final IWorkOrderService workOrderService;
+
+    @GetMapping("/list")
+    public ResponseEntity<List<WorkOrder>> getList(){
+        return ResponseEntity.ok(workOrderService.getList());
+    }
 
     @GetMapping
     public ResponseEntity<Page<WorkOrderResponseDto>> search(
