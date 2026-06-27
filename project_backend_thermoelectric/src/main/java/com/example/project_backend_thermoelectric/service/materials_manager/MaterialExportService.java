@@ -213,17 +213,24 @@ public class MaterialExportService implements IMaterialExportService {
                 workOrderReplacementRepository.save(req);
             }
         }
+        List<WorkOrderConsumable> allConsumables =
+                workOrderConsumableRepository.findByWorkOrder(workOrder);
+        List<WorkOrderReplacement> allReplacements =
+                workOrderReplacementRepository.findByWorkOrder(workOrder);
 
-        boolean allDone = workOrderConsumableRepository.findByWorkOrder(workOrder)
-                .stream().allMatch(WorkOrderConsumable::isReleased)
-                && workOrderReplacementRepository.findByWorkOrder(workOrder)
-                .stream().allMatch(WorkOrderReplacement::isReleased);
+        boolean hasAnyItem = !allConsumables.isEmpty() || !allReplacements.isEmpty();
 
+        boolean allDone = hasAnyItem
+                && allConsumables.stream().allMatch(WorkOrderConsumable::isReleased)
+                && allReplacements.stream().allMatch(WorkOrderReplacement::isReleased);
         if (allDone) {
             workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
             workOrder.setStatus(WorkOrderStatus.DANG_THUC_HIEN);
-            workOrderRepository.save(workOrder);
+        } else {
+            workOrder.setMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+            workOrder.setStatus(WorkOrderStatus.CHO_VAT_TU);
         }
+        workOrderRepository.save(workOrder);
     }
     @Override
     public long countPendingForWarehouse() {
