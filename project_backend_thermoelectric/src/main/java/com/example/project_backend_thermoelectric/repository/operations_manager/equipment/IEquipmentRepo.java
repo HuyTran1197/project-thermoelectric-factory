@@ -67,7 +67,12 @@ public interface IEquipmentRepo extends JpaRepository<Equipment, Long> {
             "e.code as code, " +
             "e.type_id as typeId, " +
             "d.name as domain, " +
-            "e.status as status " +
+            "e.status as status, " +
+            " case \n" +
+            "                when e.status = 'DANG_VAN_HANH' then 'Đang vận hành' \n" +
+            "                when e.status = 'DANG_SUA_CHUA' then 'Đang sửa chữa' \n" +
+            "                when e.status = 'DANG_DONG' then 'Đang đóng' \n" +
+            "                end as statusDisplay " +
             "from equipments e " +
             "join systems s on s.id = e.system_id " +
             "join equipment_types et on et.id = e.type_id " +
