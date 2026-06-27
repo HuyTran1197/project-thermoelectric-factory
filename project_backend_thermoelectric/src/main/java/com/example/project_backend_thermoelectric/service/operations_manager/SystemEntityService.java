@@ -5,6 +5,8 @@ import com.example.project_backend_thermoelectric.dto.operations_manager.request
 import com.example.project_backend_thermoelectric.dto.operations_manager.request.EquipmentRequestDto;
 import com.example.project_backend_thermoelectric.dto.operations_manager.request.SystemRequestDto;
 import com.example.project_backend_thermoelectric.entity.*;
+import com.example.project_backend_thermoelectric.enums.EquipmentStatus;
+import com.example.project_backend_thermoelectric.enums.WorkOrderStatus;
 import com.example.project_backend_thermoelectric.exception.DuplicateResourceException;
 import com.example.project_backend_thermoelectric.exception.NotFoundResourceException;
 import com.example.project_backend_thermoelectric.repository.operations_manager.equipment.IEquipmentParameterRepo;
@@ -72,7 +74,7 @@ public class SystemEntityService implements ISystemEntityService {
 
         equipment.setName(dto.getName());
         equipment.setCode(dto.getCode());
-        equipment.setStatus(dto.getStatus());
+        equipment.setStatus(EquipmentStatus.DANG_VAN_HANH);
         equipment.setSystem(system);
         equipment.setType(type);
 

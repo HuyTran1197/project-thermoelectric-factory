@@ -8,4 +8,5 @@ public interface EquipmentBySystemDto {
     Long getTypeId();
     String getDomain();
     String getStatus();
+    String getStatusDisplay();
 }
