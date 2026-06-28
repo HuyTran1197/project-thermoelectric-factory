@@ -53,16 +53,16 @@ public class MaterialExportService implements IMaterialExportService {
         WorkOrder workOrder = workOrderRepository.findById(exportDTO.getWorkOrderId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + exportDTO.getWorkOrderId()));
 
-        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+        if (workOrder.getStatus() == WorkOrderStatus.COMPLETED) {
             throw new RuntimeException("Phiếu công tác đã hoàn thành, không thể yêu cầu cấp vật tư");
         }
 
         MaterialStatus currentStatus = workOrder.getMaterialStatus();
-        if (currentStatus == MaterialStatus.DA_CAP_PHAT) {
+        if (currentStatus == MaterialStatus.ISSUED) {
             throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể chỉnh sửa!");
         }
 
-        if (currentStatus == MaterialStatus.CHO_CAP_PHAT) {
+        if (currentStatus == MaterialStatus.PENDING_ISSUANCE) {
             workOrderConsumableRepository.deleteByWorkOrder(workOrder);
             workOrderConsumableRepository.flush();
 
@@ -97,8 +97,8 @@ public class MaterialExportService implements IMaterialExportService {
             }
         }
 
-        workOrder.setMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
-        workOrder.setStatus(WorkOrderStatus.CHO_VAT_TU);
+        workOrder.setMaterialStatus(MaterialStatus.PENDING_ISSUANCE);
+        workOrder.setStatus(WorkOrderStatus.WAITING_FOR_MATERIALS);
         workOrderRepository.save(workOrder);
     }
 
@@ -108,7 +108,7 @@ public class MaterialExportService implements IMaterialExportService {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
-        if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
+        if (workOrder.getMaterialStatus() == MaterialStatus.PENDING_ISSUANCE) {
             throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho thực tế, không thể xuất lại!");
         }
 
@@ -139,11 +139,11 @@ public class MaterialExportService implements IMaterialExportService {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu sửa chữa ID: " + workOrderId));
 
-        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+        if (workOrder.getStatus() == WorkOrderStatus.COMPLETED) {
             throw new RuntimeException("Phiếu công tác đã hoàn thành, không thể cấp phát vật tư");
         }
 
-        if (workOrder.getMaterialStatus() == MaterialStatus.DA_CAP_PHAT) {
+        if (workOrder.getMaterialStatus() == MaterialStatus.ISSUED) {
             throw new RuntimeException("Vật tư của phiếu sửa chữa này đã được xuất kho hoàn tất!");
         }
 
@@ -220,13 +220,13 @@ public class MaterialExportService implements IMaterialExportService {
                 .stream().allMatch(WorkOrderReplacement::isReleased);
 
         if (allDone) {
-            workOrder.setMaterialStatus(MaterialStatus.DA_CAP_PHAT);
-            workOrder.setStatus(WorkOrderStatus.DANG_THUC_HIEN);
+            workOrder.setMaterialStatus(MaterialStatus.ISSUED);
+            workOrder.setStatus(WorkOrderStatus.IN_PROGRESS);
             workOrderRepository.save(workOrder);
         }
     }
     @Override
     public long countPendingForWarehouse() {
-        return workOrderRepository.countByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        return workOrderRepository.countByMaterialStatus(MaterialStatus.PENDING_ISSUANCE);
     }
 }

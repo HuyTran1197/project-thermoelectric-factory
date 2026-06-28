@@ -31,6 +31,7 @@ public class WorkOrder {
     private WorkOrderStatus status;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "material_status")
     private MaterialStatus materialStatus;
 
     @Column(name = "start_date")

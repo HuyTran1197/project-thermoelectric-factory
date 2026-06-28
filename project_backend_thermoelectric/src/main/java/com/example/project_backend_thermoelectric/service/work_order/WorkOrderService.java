@@ -115,16 +115,16 @@ public class WorkOrderService implements IWorkOrderService {
         workOrder.setRequest(repairOrder);
         workOrder.setCreatedBy(currentUser);
 
-        workOrder.setStatus(WorkOrderStatus.DA_PHAN_CONG);
+        workOrder.setStatus(WorkOrderStatus.ASSIGNED);
 
-        workOrder.setMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
+        workOrder.setMaterialStatus(MaterialStatus.ISSUANCE_NOT_YET_REQUESTED);
 
         workOrder.setStartDate(LocalDateTime.now());
-        repairOrder.setStatus(RepairOrderStatus.DANG_THUC_HIEN);
+        repairOrder.setStatus(RepairOrderStatus.IN_PROGRESS);
 
         repairOrderRepository.save(repairOrder);
         Equipment equipment = repairOrder.getEquipment();
-        equipment.setStatus(EquipmentStatus.DANG_SUA_CHUA);
+        equipment.setStatus(EquipmentStatus.UNDER_REPAIR);
         equipmentRepo.save(equipment);
         WorkOrder savedWorkOrder = workOrderRepository.save(workOrder);
 

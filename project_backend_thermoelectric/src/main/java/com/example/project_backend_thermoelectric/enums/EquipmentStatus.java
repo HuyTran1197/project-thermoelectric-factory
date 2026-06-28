@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum EquipmentStatus {
 
-    DANG_VAN_HANH("Đang vận hành"),
-    DANG_SUA_CHUA("Đang sửa chữa"),
-    DANG_DONG("Đang đóng");
+    ACTIVE("Đang vận hành"),
+    UNDER_REPAIR("Đang sửa chữa"),
+    CLOSING("Đang đóng");
 
     private final String displayName;
 }

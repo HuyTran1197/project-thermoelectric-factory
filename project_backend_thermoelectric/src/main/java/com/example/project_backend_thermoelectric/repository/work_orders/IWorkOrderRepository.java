@@ -31,10 +31,10 @@ public interface IWorkOrderRepository
             "ro.description as description, " +
             "wo.status as status, " +
             "case " +
-            "when wo.status = 'DA_PHAN_CONG' then 'Đã phân công' " +
-            "when wo.status = 'DANG_THUC_HIEN' then 'Đang thực hiện' " +
-            "when wo.status = 'CHO_VAT_TU' then 'Chờ vật tư' " +
-            "when wo.status = 'HOAN_THANH' then 'Hoàn thành' " +
+            "when wo.status = 'ASSIGNED' then 'Đã phân công' " +
+            "when wo.status = 'IN_PROGRESS' then 'Đang thực hiện' " +
+            "when wo.status = 'WAITING_FOR_MATERIALS' then 'Chờ vật tư' " +
+            "when wo.status = 'COMPLETED' then 'Hoàn thành' " +
             "end as statusDisplay " +
             "from work_orders wo " +
             "join repair_order ro on ro.id = wo.request_id " +

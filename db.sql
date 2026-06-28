@@ -148,16 +148,33 @@ CREATE TABLE equipment_parameters (
 ) ENGINE=InnoDB;
 
 -- ======================
+-- !!. REPAIR_ORDER
+-- ======================
+CREATE TABLE repair_order (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title varchar(255) not null,
+    description TEXT,
+    status VARCHAR(50) not null,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by BIGINT not null,
+    equipment_id BIGINT NOT NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (equipment_id) REFERENCES equipments(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ======================
 -- 17. WORK_ORDERS
 -- ======================
 CREATE TABLE work_orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(255) NOT NULL UNIQUE,
     request_id BIGINT,
     created_by BIGINT,
-    status VARCHAR(50) DEFAULT 'OPEN',
+    status VARCHAR(50) DEFAULT 'ASSIGNED',
+    material_status VARCHAR(50) DEFAULT 'ISSUANCE_NOT_YET_REQUESTED',
     start_date DATETIME,
     end_date DATETIME,
-    FOREIGN KEY (request_id) REFERENCES requests(id),
+    FOREIGN KEY (request_id) REFERENCES repair_order(id),
     FOREIGN KEY (created_by) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
@@ -251,7 +268,6 @@ CREATE TABLE replacement_transactions (
     FOREIGN KEY (material_id) REFERENCES replacement_materials(id),
     FOREIGN KEY (created_by) REFERENCES users(id)
 ) ENGINE=InnoDB;
-
 -- ======================
 -- 25. WORK_ORDER_CONSUMABLES
 -- ======================
@@ -260,10 +276,11 @@ CREATE TABLE work_order_consumables (
     work_order_id BIGINT NOT NULL,
     material_id BIGINT NOT NULL,
     quantity INT NOT NULL,
+    released BOOLEAN NOT NULL DEFAULT FALSE,
+    UNIQUE(work_order_id, material_id),
     FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE CASCADE,
     FOREIGN KEY (material_id) REFERENCES consumable_materials(id)
 ) ENGINE=InnoDB;
-
 -- ======================
 -- 26. WORK_ORDER_REPLACEMENTS
 -- ======================
@@ -272,6 +289,8 @@ CREATE TABLE work_order_replacements (
     work_order_id BIGINT NOT NULL,
     material_id BIGINT NOT NULL,
     quantity INT NOT NULL,
+    released BOOLEAN NOT NULL DEFAULT FALSE,
+    UNIQUE(work_order_id, material_id),
     FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE CASCADE,
     FOREIGN KEY (material_id) REFERENCES replacement_materials(id)
 ) ENGINE=InnoDB;
@@ -360,18 +379,18 @@ INSERT INTO employees (full_name, department_id, position_id) VALUES
 
 -- ======================
 -- 5. USERS
--- (password mã hoá BCrypt của "123456")
+-- (password mã hoá BCrypt của "123456") !!!!
 -- ======================
 INSERT INTO users (username, password, employee_id) VALUES
 ('admin', '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 1),
-('nam',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 2),
-('huy',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 3),
-('thai',  '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 4),
-('to',    '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 5),
-('thien', '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 6),
-('lan',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 7),
-('ca',    '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 8),
-('kip',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 9);
+('namnv',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 2),
+('huytm',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 3),
+('thaipv',  '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 4),
+('todv',    '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 5),
+('thienlv', '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 6),
+('lanht',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 7),
+('cavv',    '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 8),
+('kipbv',   '$2a$10$ZLGZXd9htze4RUReEWy0JOtJV0BFA69Csn1LCtxQT3f4H/Ktqv9Qu', 9);
 
 -- ======================
 -- 6. USER_ROLES (mỗi user 1 role tương ứng)
@@ -423,11 +442,11 @@ INSERT INTO equipment_types (name, domain_id) VALUES
 -- 10. EQUIPMENTS
 -- ======================
 INSERT INTO equipments (name, code, system_id, type_id, status) VALUES
-('Bơm cấp nước thô', 'KKS-0001', 1, 1, 'DANG_VAN_HANH'),
-('Quạt gió chính', 'KKS-0002', 5, 2, 'DANG_VAN_HANH'),
-('Động cơ bơm nước thô', 'KKS-0003', 1, 3, 'DANG_VAN_HANH'),
-('Van xả đáy lò hơi', 'KKS-0004', 5, 4, 'DANG_VAN_HANH'),
-('Đồng hồ đo áp suất dầu', 'KKS-0005', 2, 5, 'DANG_VAN_HANH');
+('Bơm cấp nước thô', 'KKS-0001', 1, 1, 'ACTIVE'),
+('Quạt gió chính', 'KKS-0002', 5, 2, 'ACTIVE'),
+('Động cơ bơm nước thô', 'KKS-0003', 1, 3, 'ACTIVE'),
+('Van xả đáy lò hơi', 'KKS-0004', 5, 4, 'ACTIVE'),
+('Đồng hồ đo áp suất dầu', 'KKS-0005', 2, 5, 'CLOSING');
 
 -- ======================
 -- PARAMETER_DEFINITIONS (đầy đủ cho 5 types)
@@ -586,191 +605,103 @@ INSERT INTO tools (name, code, type, total_quantity, available_quantity, locatio
 -- 16. TOOL_BORROWINGS
 -- ======================
 INSERT INTO tool_borrowings (quantity, status, note, borrow_date, due_date, return_date, tool_id, employee_id) VALUES
-(2, 'DANG_MUON', 'Mượn sửa bơm cấp nước', '2026-06-20 08:00:00', '2026-06-25 17:00:00', NULL, 1, 2),
-(1, 'DA_TRA', 'Đã trả đúng hạn', '2026-06-15 08:00:00', '2026-06-18 17:00:00', '2026-06-18 16:00:00', 2, 3),
-(1, 'DANG_MUON', 'Mượn khoan lắp đặt thiết bị', '2026-06-22 09:00:00', '2026-06-24 17:00:00', NULL, 3, 4),
-(1, 'DA_TRA', 'Kiểm tra thông số điện', '2026-06-10 08:00:00', '2026-06-12 17:00:00', '2026-06-12 15:30:00', 4, 5),
-(1, 'DANG_MUON', 'Nâng thiết bị bảo trì', '2026-06-23 08:00:00', '2026-06-26 17:00:00', NULL, 5, 2);
+(2, 'BORROWED', 'Mượn sửa bơm cấp nước', '2026-06-20 08:00:00', '2026-06-25 17:00:00', NULL, 1, 2),
+(1, 'RETURNED', 'Đã trả đúng hạn', '2026-06-15 08:00:00', '2026-06-18 17:00:00', '2026-06-18 16:00:00', 2, 3),
+(1, 'BORROWED', 'Mượn khoan lắp đặt thiết bị', '2026-06-22 09:00:00', '2026-06-24 17:00:00', NULL, 3, 4),
+(1, 'RETURNED', 'Kiểm tra thông số điện', '2026-06-10 08:00:00', '2026-06-12 17:00:00', '2026-06-12 15:30:00', 4, 5),
+(1, 'BORROWED', 'Nâng thiết bị bảo trì', '2026-06-23 08:00:00', '2026-06-26 17:00:00', NULL, 5, 2);
 
 
+-- ======================
+-- REPAIR_ORDER (5 yêu cầu sửa chữa)
+-- created_by: users (4=thaipv, 5=todv -> Trưởng ca/kíp tạo yêu cầu)
+-- ======================
+INSERT INTO repair_order (title, description, status, created_at, created_by, equipment_id) VALUES
+('Máy bơm rung bất thường', 'Máy bơm rung mạnh khi vận hành tải cao. Yêu cầu kiểm tra vòng bi và căn chỉnh trục.', 'COMPLETED', '2026-06-15 08:00:00', 4, 1),
+('Quạt gió phát tiếng ồn lớn', 'Quạt gió chính phát tiếng ồn bất thường khi chạy tốc độ cao.', 'COMPLETED', '2026-06-18 09:00:00', 5, 2),
+('Động cơ bơm quá nhiệt', 'Động cơ bơm nước thô bị nóng bất thường sau 2 giờ vận hành.', 'IN_PROGRESS', '2026-06-22 10:00:00', 4, 3),
+('Van xả đáy bị rò rỉ', 'Van xả đáy lò hơi có hiện tượng rò rỉ nhẹ tại mặt bích.', 'IN_PROGRESS', '2026-06-24 14:00:00', 5, 4),
+('Đồng hồ đo áp suất sai số', 'Đồng hồ đo áp suất dầu hiển thị sai số lớn so với thực tế.', 'PENDING', '2026-06-26 11:00:00', 4, 5);
 
+-- ======================
+-- WORK_ORDERS (4 phiếu công tác - ứng với 4 repair_order đã xử lý)
+-- created_by: users (3=huytm Quản đốc sửa chữa)
+-- ======================
+INSERT INTO work_orders (code, request_id, created_by, status, material_status, start_date, end_date) VALUES
+('0001/06/2026', 1, 3, 'COMPLETED', 'ISSUED', '2026-06-15 08:30:00', '2026-06-15 17:00:00'),
+('0002/06/2026', 2, 3, 'COMPLETED', 'ISSUED', '2026-06-18 09:30:00', '2026-06-19 16:00:00'),
+('0003/06/2026', 3, 3, 'IN_PROGRESS', 'ISSUED', '2026-06-22 10:30:00', NULL),
+('0004/06/2026', 4, 3, 'WAITING_FOR_MATERIALS', 'PENDING_ISSUANCE', '2026-06-24 14:30:00', NULL);
 
+-- ======================
+-- WORK_ORDER_ASSIGNMENTS (phân công nhân sự cho 4 work_order trên)
+-- employee_id: 3=Huy,5=Tổ,6=Thiện,8=Ca,9=Kíp (dùng làm nhân sự thi công)
+-- ======================
+INSERT INTO work_order_assignments (work_order_id, employee_id, role_in_work) VALUES
+(1, 3, 'LANH_DAO_CONG_VIEC'),
+(1, 8, 'NHAN_VIEN_LAM_VIEC'),
+(2, 5, 'CHI_HUY_TRUC_TIEP'),
+(2, 9, 'NHAN_VIEN_LAM_VIEC'),
+(3, 3, 'LANH_DAO_CONG_VIEC');
 
--- KHÔNG DÙNG LỆNH SQL NÀY ĐỂ INSERT -> DỮ LIỆU CŨ
-INSERT INTO parameter_definitions (name, unit, type_id) VALUES
+-- ======================
+-- TECHNICAL_REPORTS (biên bản đánh giá kỹ thuật)
+-- created_by: 3=huytm
+-- ======================
+INSERT INTO technical_reports (work_order_id, content, created_by, created_at) VALUES
+(1, '{"conclusion":"Đã thay vòng bi và căn chỉnh trục, thiết bị vận hành ổn định.","equipmentReports":[{"equipmentId":1,"equipmentName":"Bơm cấp nước thô","damageDescription":"Vòng bi mòn, trục lệch tâm","assessment":"Vòng bi hư hỏng nặng cần thay mới","proposedSolution":"Thay vòng bi SKF và căn chỉnh lại trục"}]}', 3, '2026-06-15 16:00:00'),
+(2, '{"conclusion":"Đã thay dây curoa, quạt vận hành êm trở lại.","equipmentReports":[{"equipmentId":2,"equipmentName":"Quạt gió chính","damageDescription":"Dây curoa bị mòn, gây tiếng ồn","assessment":"Dây curoa đến hạn thay thế","proposedSolution":"Thay dây curoa mới"}]}', 3, '2026-06-19 15:00:00'),
+(3, '{"conclusion":"Đang tiếp tục kiểm tra hệ thống làm mát động cơ.","equipmentReports":[{"equipmentId":3,"equipmentName":"Động cơ bơm nước thô","damageDescription":"Nhiệt độ tăng cao bất thường","assessment":"Nghi ngờ quạt làm mát hoạt động kém","proposedSolution":"Kiểm tra và vệ sinh quạt làm mát"}]}', 3, '2026-06-22 15:00:00'),
+(4, '{"conclusion":"Chờ vật tư để hoàn tất sửa chữa van.","equipmentReports":[{"equipmentId":4,"equipmentName":"Van xả đáy lò hơi","damageDescription":"Rò rỉ tại mặt bích","assessment":"Phớt làm kín bị lão hoá","proposedSolution":"Thay phớt làm kín mới"}]}', 3, '2026-06-24 16:00:00'),
+(2, '{"conclusion":"Kiểm tra bổ sung sau 1 tuần vận hành, quạt hoạt động bình thường.","equipmentReports":[{"equipmentId":2,"equipmentName":"Quạt gió chính","damageDescription":"Không phát hiện bất thường","assessment":"Đạt yêu cầu kỹ thuật","proposedSolution":"Không cần xử lý thêm"}]}', 3, '2026-06-26 10:00:00');
 
--- ================= BƠM (1) =================
-('Lưu lượng', 'm3/h', 1),
-('Cột áp', 'm', 1),
-('Công suất', 'kW', 1),
-('Tốc độ quay', 'vòng/phút', 1),
-('Hiệu suất', '%', 1),
-('Đường kính ống hút', 'mm', 1),
-('Đường kính ống xả', 'mm', 1),
-('Hãng sản xuất', NULL, 1),
-('Model', NULL, 1),
-('Năm sản xuất', NULL, 1),
+-- ======================
+-- MAINTENANCE_LOGS (lịch sử sửa chữa thiết bị)
+-- ======================
+INSERT INTO maintenance_logs (equipment_id, work_order_id, description, date) VALUES
+(1, 1, 'Thay vòng bi SKF và căn chỉnh trục bơm cấp nước thô', '2026-06-15 17:00:00'),
+(2, 2, 'Thay dây curoa truyền động quạt gió chính', '2026-06-19 16:00:00'),
+(3, 3, 'Kiểm tra hệ thống làm mát động cơ bơm nước thô', '2026-06-22 16:00:00'),
+(4, 4, 'Phát hiện rò rỉ tại mặt bích van xả đáy, chờ vật tư thay thế', '2026-06-24 17:00:00'),
+(5, NULL, 'Bảo trì định kỳ đồng hồ đo áp suất dầu', '2026-06-10 09:00:00');
 
--- ================= QUẠT (2) =================
-('Lưu lượng gió', 'm3/h', 2),
-('Áp suất', 'Pa', 2),
-('Công suất', 'kW', 2),
-('Tốc độ quay', 'vòng/phút', 2),
-('Hiệu suất', '%', 2),
-('Đường kính cánh', 'mm', 2),
-('Hãng sản xuất', NULL, 2),
-('Model', NULL, 2),
+-- ======================
+-- CONSUMABLE_TRANSACTIONS (nhập/xuất vật tư tiêu hao)
+-- created_by: 6=thienlv (Thủ kho vật tư)
+-- ======================
+INSERT INTO consumable_transactions (material_id, type, quantity, created_by, created_at) VALUES
+(1, 'IMPORT', 20, 6, '2026-06-01 08:00:00'),
+(2, 'IMPORT', 50, 6, '2026-06-01 08:10:00'),
+(1, 'EXPORT', 5, 6, '2026-06-15 16:30:00'),
+(3, 'IMPORT', 15, 6, '2026-06-10 09:00:00'),
+(2, 'EXPORT', 10, 6, '2026-06-19 15:30:00');
 
--- ================= MÁY NÉN (3) =================
-('Lưu lượng khí', 'm3/h', 3),
-('Áp suất đầu ra', 'bar', 3),
-('Công suất', 'kW', 3),
-('Tốc độ quay', 'vòng/phút', 3),
-('Nhiệt độ làm việc', '°C', 3),
-('Hãng sản xuất', NULL, 3),
-('Model', NULL, 3),
+-- ======================
+-- REPLACEMENT_TRANSACTIONS (nhập/xuất phụ tùng thay thế)
+-- ======================
+INSERT INTO replacement_transactions (material_id, type, quantity, created_by, created_at) VALUES
+(1, 'IMPORT', 10, 6, '2026-06-01 08:30:00'),
+(2, 'IMPORT', 8, 6, '2026-06-01 08:40:00'),
+(1, 'EXPORT', 2, 6, '2026-06-15 16:35:00'),
+(2, 'EXPORT', 1, 6, '2026-06-19 15:35:00'),
+(3, 'IMPORT', 12, 6, '2026-06-10 09:30:00');
 
--- ================= VAN (4) =================
-('Đường kính danh nghĩa', 'mm', 4),
-('Áp suất làm việc', 'bar', 4),
-('Nhiệt độ làm việc', '°C', 4),
-('Loại van', NULL, 4),
-('Vật liệu', NULL, 4),
-('Kiểu kết nối', NULL, 4),
-('Hãng sản xuất', NULL, 4),
+-- ======================
+-- WORK_ORDER_CONSUMABLES
+-- ======================
+INSERT INTO work_order_consumables (work_order_id, material_id, quantity, released) VALUES
+(1, 1, 5, TRUE),
+(1, 2, 10, TRUE),
+(2, 2, 10, TRUE),
+(3, 3, 3, TRUE),
+(4, 4, 4, FALSE);
 
--- ================= ĐỘNG CƠ (6) =================
-('Công suất', 'kW', 6),
-('Điện áp', 'V', 6),
-('Dòng điện', 'A', 6),
-('Tần số', 'Hz', 6),
-('Tốc độ quay', 'vòng/phút', 6),
-('Hiệu suất', '%', 6),
-('Hệ số công suất', 'cosφ', 6),
-('Cấp cách điện', NULL, 6),
-('Hãng sản xuất', NULL, 6),
-('Model', NULL, 6),
-
--- ================= MÁY BIẾN ÁP (7) =================
-('Công suất định mức', 'kVA', 7),
-('Điện áp sơ cấp', 'kV', 7),
-('Điện áp thứ cấp', 'kV', 7),
-('Dòng điện', 'A', 7),
-('Tần số', 'Hz', 7),
-('Tổ đấu dây', NULL, 7),
-('Hãng sản xuất', NULL, 7),
-('Năm sản xuất', NULL, 7),
-
--- ================= THIẾT BỊ ĐO (5) =================
-('Loại tín hiệu', NULL, 5),
-('Dải đo', NULL, 5),
-('Độ chính xác', '%', 5),
-('Nguồn cấp', 'V', 5),
-('Tín hiệu đầu ra', NULL, 5),
-('Hãng sản xuất', NULL, 5),
-('Model', NULL,5),
-
--- ================= THIẾT BỊ ĐIỀU KHIỂN (8) =================
-('Điện áp hoạt động', 'V', 8),
-('Dòng điện', 'A', 8),
-('Giao thức truyền thông', NULL, 8),
-('Số kênh I/O', NULL, 8),
-('Nhiệt độ làm việc', '°C', 8),
-('Hãng sản xuất', NULL, 8),
-('Model', NULL, 8);
-
-
-INSERT INTO equipment_parameters (equipment_id, parameter_id, value) VALUES
-
--- =====================================================
--- 1. BƠM CẤP NƯỚC THÔ (equipment_id = 1)
--- type_id = 1 (Bơm)
--- =====================================================
-(1, 1, '850'),
-(1, 2, '180'),
-(1, 3, '3200'),
-(1, 4, '2980'),
-(1, 5, '89'),
-(1, 6, '250'),
-(1, 7, '200'),
-(1, 8, 'KSB'),
-(1, 9, 'HGC-450'),
-(1, 10, '2020'),
-
--- =====================================================
--- 2. ĐỘNG CƠ BƠM NƯỚC THÔ (equipment_id = 3)
--- type_id = 6 (Động cơ)
--- parameter_id = 33 -> 42
--- =====================================================
-(3, 33, '315'),
-(3, 34, '6000'),
-(3, 35, '38'),
-(3, 36, '50'),
-(3, 37, '2980'),
-(3, 38, '95'),
-(3, 39, '0.89'),
-(3, 40, 'F'),
-(3, 41, 'ABB'),
-(3, 42, 'MOTOR-315'),
-
--- =====================================================
--- 3. ĐỒNG HỒ ĐO ÁP SUẤT DẦU (equipment_id = 5)
--- type_id = 5 (Thiết bị đo)
--- parameter_id = 51 -> 57
--- =====================================================
-(5, 51, '4-20mA'),
-(5, 52, '0-25 bar'),
-(5, 53, '0.5'),
-(5, 54, '24'),
-(5, 55, 'Analog'),
-(5, 56, 'Yokogawa'),
-(5, 57, 'EJA530A'),
-
--- =====================================================
--- 4. THIẾT BỊ CẢM BIẾN HƠI NÓNG (equipment_id = 6)
--- type_id = 5 (Thiết bị đo)
--- =====================================================
-(6, 51, '4-20mA'),
-(6, 52, '0-600 °C'),
-(6, 53, '0.2'),
-(6, 54, '24'),
-(6, 55, 'Analog'),
-(6, 56, 'Siemens'),
-(6, 57, 'SITRANS TS');
-
-
--- 1. Xoá constraint cũ đang trỏ sai bảng
-ALTER TABLE work_orders DROP FOREIGN KEY work_orders_ibfk_1;
-
--- 2. Thêm lại constraint trỏ đúng về bảng repair_order
-ALTER TABLE work_orders
-ADD CONSTRAINT work_orders_ibfk_1
-FOREIGN KEY (request_id) REFERENCES repair_order(id);
-SHOW CREATE TABLE work_orders;
-
--- 1. Xoá foreign key constraint trên cột này trước
-ALTER TABLE work_orders DROP FOREIGN KEY FK734xdi12pbbon5yox0svek4xo;
-
--- 2. Xoá luôn cột (vì cũng không dùng đến)
-ALTER TABLE work_orders DROP COLUMN repair_order_id;
-
--- tắt safe mode để update status
-SET SQL_SAFE_UPDATES = 0;
-
-UPDATE equipments SET status = 'DANG_VAN_HANH' WHERE status = 'Đang vận hành';
-UPDATE equipments SET status = 'DANG_SUA_CHUA' WHERE status = 'Đang sửa chửa';
-UPDATE equipments SET status = 'DANG_DONG' WHERE status = 'Đang đóng';
-
--- bật lại safe mode
-SET SQL_SAFE_UPDATES = 1;
-
-select tr.id as id,wo.code as workOrderCode, e.code as equipmentCode, e.name as equipmentName,
-tr.created_at as createdAt
-from technical_reports tr
-join work_orders wo on wo.id = tr.work_order_id
-join repair_order ro on ro.id = wo.request_id
-join equipments e on e.id = ro.equipment_id
-where searchWorkOrderCode
-
-
-
+-- ======================
+-- WORK_ORDER_REPLACEMENTS
+-- ======================
+INSERT INTO work_order_replacements (work_order_id, material_id, quantity, released) VALUES
+(1, 1, 2, TRUE),
+(2, 2, 1, TRUE),
+(3, 3, 1, TRUE),
+(4, 3, 1, FALSE),
+(4, 4, 2, FALSE);

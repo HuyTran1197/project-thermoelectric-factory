@@ -23,9 +23,9 @@ public interface IEquipmentRepo extends JpaRepository<Equipment, Long> {
                 et.name as type,
                 e.status as status,
                 case 
-                when e.status = 'DANG_VAN_HANH' then 'Đang vận hành' 
-                when e.status = 'DANG_SUA_CHUA' then 'Đang sửa chữa' 
-                when e.status = 'DANG_DONG' then 'Đang đóng' 
+                when e.status = 'ACTIVE' then 'Đang vận hành' 
+                when e.status = 'UNDER_REPAIR' then 'Đang sửa chữa' 
+                when e.status = 'CLOSING' then 'Đang đóng' 
                 end as statusDisplay 
             from equipments e
             join systems s on s.id = e.system_id
@@ -69,9 +69,9 @@ public interface IEquipmentRepo extends JpaRepository<Equipment, Long> {
             "d.name as domain, " +
             "e.status as status, " +
             " case \n" +
-            "                when e.status = 'DANG_VAN_HANH' then 'Đang vận hành' \n" +
-            "                when e.status = 'DANG_SUA_CHUA' then 'Đang sửa chữa' \n" +
-            "                when e.status = 'DANG_DONG' then 'Đang đóng' \n" +
+            "                when e.status = 'ACTIVE' then 'Đang vận hành' \n" +
+            "                when e.status = 'UNDER_REPAIR' then 'Đang sửa chữa' \n" +
+            "                when e.status = 'CLOSING' then 'Đang đóng' \n" +
             "                end as statusDisplay " +
             "from equipments e " +
             "join systems s on s.id = e.system_id " +
