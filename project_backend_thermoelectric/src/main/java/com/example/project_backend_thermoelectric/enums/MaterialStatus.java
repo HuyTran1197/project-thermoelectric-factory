@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MaterialStatus {
-    CHUA_YEU_CAU_CAP_PHAT("Chưa yêu cầu cấp phát"),
-    CHO_CAP_PHAT("Chờ cấp phát"),
-    DA_CAP_PHAT("Đã cấp phát");
+    ISSUANCE_NOT_YET_REQUESTED("Chưa yêu cầu cấp phát"),
+    PENDING_ISSUANCE("Chờ cấp phát"),
+    ISSUED("Đã cấp phát");
     private final String displayName;
 
 }

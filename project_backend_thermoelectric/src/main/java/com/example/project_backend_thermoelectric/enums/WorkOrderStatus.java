@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum WorkOrderStatus {
 
-    DA_PHAN_CONG("Đã phân công"),
-    DANG_THUC_HIEN("Đang thực hiện"),
-    CHO_VAT_TU("Chờ vật tư"),
-    HOAN_THANH("Hoàn thành");
+    ASSIGNED("Đã phân công"),
+    IN_PROGRESS("Đang thực hiện"),
+    WAITING_FOR_MATERIALS("Chờ vật tư"),
+    COMPLETED("Hoàn thành");
 
     private final String displayName;
 }

@@ -107,23 +107,23 @@ public class MaterialExportController {
     }
     @GetMapping("/pending-list")
     public ResponseEntity<List<WorkOrder>> getPendingWorkOrders() {
-        List<WorkOrder> pendingOrders = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        List<WorkOrder> pendingOrders = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.PENDING_ISSUANCE);
         return ResponseEntity.ok(pendingOrders);
     }
 
     @GetMapping("/pending-count")
     public ResponseEntity<Long> countPendingWorkOrders() {
-        long count = workOrderRepository.countByMaterialStatus(MaterialStatus.CHO_CAP_PHAT);
+        long count = workOrderRepository.countByMaterialStatus(MaterialStatus.PENDING_ISSUANCE);
         return ResponseEntity.ok(count);
     }
     @GetMapping("/request-list")
     public ResponseEntity<List<WorkOrder>> getRequestList() {
-        List<WorkOrder> requestList = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
+        List<WorkOrder> requestList = workOrderRepository.getWorkOrdersByMaterialStatus(MaterialStatus.ISSUANCE_NOT_YET_REQUESTED);
         return ResponseEntity.ok(requestList);
     }
     @GetMapping("/request-material")
     public ResponseEntity<Long> countRequestMaterial() {
-        long count = workOrderRepository.countByMaterialStatus(MaterialStatus.CHUA_YEU_CAU_CAP_PHAT);
+        long count = workOrderRepository.countByMaterialStatus(MaterialStatus.ISSUANCE_NOT_YET_REQUESTED);
         return ResponseEntity.ok(count);
     }
 }

@@ -74,7 +74,7 @@ public class SystemEntityService implements ISystemEntityService {
 
         equipment.setName(dto.getName());
         equipment.setCode(dto.getCode());
-        equipment.setStatus(EquipmentStatus.DANG_VAN_HANH);
+        equipment.setStatus(EquipmentStatus.ACTIVE);
         equipment.setSystem(system);
         equipment.setType(type);
 

@@ -39,27 +39,27 @@ public class WorkOrderCompletionService {
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Work Order"));
 
-        if (workOrder.getStatus() == WorkOrderStatus.HOAN_THANH) {
+        if (workOrder.getStatus() == WorkOrderStatus.COMPLETED) {
             throw new RuntimeException("Phiếu này đã được đóng trước đó");
         }
 
-        if (workOrder.getStatus() == WorkOrderStatus.CHO_VAT_TU) {
+        if (workOrder.getStatus() == WorkOrderStatus.WAITING_FOR_MATERIALS) {
             throw new RuntimeException("Phiếu công tác đang chờ vật tư, không thể đóng phiếu");
         }
 
         // Đóng phiếu kỹ thuật
-        workOrder.setStatus(WorkOrderStatus.HOAN_THANH);
+        workOrder.setStatus(WorkOrderStatus.COMPLETED);
         workOrder.setEndDate(LocalDateTime.now());
         workOrderRepository.save(workOrder);
 
         // Nghiệm thu yêu cầu sửa chữa
         RepairOrder repairOrder = workOrder.getRequest();
-        repairOrder.setStatus(RepairOrderStatus.DA_HOAN_THANH);
+        repairOrder.setStatus(RepairOrderStatus.COMPLETED);
         repairOrderRepository.save(repairOrder);
 
         // Đưa thiết bị quay lại vận hành
         Equipment equipment = repairOrder.getEquipment();
-        equipment.setStatus(EquipmentStatus.DANG_VAN_HANH);
+        equipment.setStatus(EquipmentStatus.ACTIVE);
         equipmentRepo.save(equipment);
     }
 }
