@@ -585,11 +585,11 @@ INSERT INTO consumable_materials (name, code, unit, location, description) VALUE
 -- 14. REPLACEMENT_MATERIALS
 -- ======================
 INSERT INTO replacement_materials (name, code, unit, location, description) VALUES
-('Vòng Bi SKF', 'REP-0001', 'Cái', 'Kho B1', 'Vòng bi cho động cơ bơm'),
-('Dây Curoa', 'REP-0002', 'Cái', 'Kho B1', 'Dây curoa truyền động'),
-('Phớt Làm Kín', 'REP-0003', 'Cái', 'Kho B2', 'Phớt làm kín trục bơm'),
-('Bulong M16', 'REP-0004', 'Cái', 'Kho B2', 'Bulong lắp ghép thiết bị'),
-('Van Một Chiều', 'REP-0005', 'Cái', 'Kho B3', 'Van một chiều thay thế');
+('Vòng Bi SKF', 'REP-0001', 'Cái', NULL, 'Vòng bi cho động cơ bơm'),
+('Dây Curoa', 'REP-0002', 'Cái', NULL, 'Dây curoa truyền động'),
+('Phớt Làm Kín', 'REP-0003', 'Cái', NULL, 'Phớt làm kín trục bơm'),
+('Bulong M16', 'REP-0004', 'Cái', NULL, 'Bulong lắp ghép thiết bị'),
+('Van Một Chiều', 'REP-0005', 'Cái', NULL, 'Van một chiều thay thế');
 
 -- ======================
 -- 15. TOOLS
