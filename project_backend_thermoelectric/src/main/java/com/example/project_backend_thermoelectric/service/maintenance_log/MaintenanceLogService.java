@@ -55,8 +55,8 @@ public class MaintenanceLogService implements IMaintenanceLogService {
 
         dto.setId(log.getId());
 
-        dto.setWorkOrderId(log.getWorkOrder().getId());
-        dto.setWorkOrderCode(log.getWorkOrder().getCode());
+        dto.setWorkOrderId(log.getWorkOrder() != null ? log.getWorkOrder().getId() : null);
+        dto.setWorkOrderCode(log.getWorkOrder() != null ? log.getWorkOrder().getCode() : null);
 
         dto.setEquipmentId(log.getEquipment().getId());
         dto.setEquipmentName(log.getEquipment().getName());
